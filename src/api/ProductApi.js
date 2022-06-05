@@ -9,3 +9,8 @@ export const getTotalPage = () =>{
     const url = `/api/site/get-total-page`;
     return Instance.get(url);
 }
+
+export const getProductById = (id) =>{
+    const url = `/api/site/get-product-detail/${id}`;
+    return Instance.get(url);
+}

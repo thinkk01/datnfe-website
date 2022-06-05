@@ -1,10 +1,12 @@
 import "./App.css";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {Switch, Route } from "react-router-dom";
 import Home from "./components/Home";
 import { useState, useEffect, React } from "react";
 import { getAllProducts, getTotalPage } from "./api/ProductApi";
+import ProductDetail from "./components/ProductDetail";
+import Cart from "./components/Cart";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -21,8 +23,7 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <Router>
+      <div>
         <Header></Header>
         <Switch>
           <Route path="/" exact>
@@ -33,10 +34,15 @@ function App() {
               onChangePage={onChangePage}
             ></Home>
           </Route>
+          <Route path={`/product-detail/:id`} exact>
+            <ProductDetail></ProductDetail>
+          </Route>
+          <Route path="/cart" exact>
+            <Cart></Cart>
+          </Route>
         </Switch>
         <Footer></Footer>
-      </Router>
-    </div>
+        </div>
   );
 }
 

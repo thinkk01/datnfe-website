@@ -3,37 +3,54 @@ import nike from "../static/images/nike.jpg";
 import puma from "../static/images/puma.jpg";
 import fila from "../static/images/fila.jpg";
 import { NavLink } from "react-router-dom";
-
+import first from '../static/images/slider_1_image.jpg';
+import second from '../static/images/slider_2_image.jpg';
+import third from '../static/images/slider_4_image.jpg';
+import fourth from '../static/images/slider_5_image.jpg'
 const Home = (props) => {
-  var pagesArray = [];
-  for (var i = 0; i < props.total; i++) {
-    var current = parseInt(i) + parseInt(1);
-    pagesArray.push(
-      <li className={props.page === current ? "page-item active" : "page-item"}>
-        <button
-          className="page-link"
-          onClick={() => onHandleChangePage(current)}
-        >
-          {current}
-        </button>
-      </li>
-    );
-  }
   var rows = new Array(props.total).fill(0).map((zero, index) => (
-    <li className={props.page === index + 1 ? "page-item active" : "page-item"} key={index}>
-      <button className="page-link" onClick={() => onHandleChangePage(index + 1)}>
+    <li
+      className={props.page === index + 1 ? "page-item active" : "page-item"}
+      key={index}
+    >
+      <button
+        className="page-link"
+        onClick={() => onHandleChangePage(index + 1)}
+      >
         {index + 1}
       </button>
     </li>
   ));
 
   const onHandleChangePage = (page) => {
-    console.log(page);
     props.onChangePage(page);
   };
 
   return (
     <div>
+    {/* Carousel */}
+    <div id="slides" className="carousel slide  mb-5" data-ride="carousel">
+        <ul className="carousel-indicators">
+          <li data-target="#slides" data-slide-to={0} className="active" />
+          <li data-target="#slides" data-slide-to={1} />
+          <li data-target="#slides" data-slide-to={2} />
+          <li data-target="#slides" data-slide-to={3} />
+        </ul>
+        <div className="carousel-inner">
+          <div className="carousel-item active">
+            <img src={first} alt=""/>
+          </div>
+          <div className="carousel-item">
+            <img src={second} alt=""/>
+          </div>
+          <div className="carousel-item">
+            <img src={third} alt=""/>
+          </div>
+          <div className="carousel-item">
+            <img src={fourth} alt=""/>
+          </div>
+        </div>
+      </div>
       <div className="container-fluid padding">
         <div className="row text-center padding">
           <div className="col-xs-12 col-sm-6 col-md-3 ">
@@ -53,7 +70,7 @@ const Home = (props) => {
       </div>
       <div className="container-fluid padding">
         <div className="row welcome">
-          <div className="col-12">
+          <div className="col-12 text-center">
             <h4 className="title">Mới nhất</h4>
           </div>
         </div>
@@ -76,9 +93,14 @@ const Home = (props) => {
                     />
                     <h4 className="card-title text-danger">{item.name}</h4>
                     <p className="card-text text-black-50">
-                      {item.price.toLocaleString()}₫
+                      Lượt xem: {item.view}
                     </p>
-                    <NavLink to="#" className="btn btn-primary">
+                    <h5 className="card-title">{item.price.toLocaleString()}₫</h5>
+                    <NavLink
+                      to={`/product-detail/${item.id}`}
+                      exact
+                      className="btn btn-primary"
+                    >
                       Mua hàng
                     </NavLink>
                   </div>

@@ -1,0 +1,229 @@
+import { React, useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
+import product from "../static/images/cate.jpg";
+import { getProductById } from "../api/ProductApi";
+import { useParams } from "react-router-dom";
+
+const ProductDetail = (props) => {
+  const { id } = useParams();
+  const [item, setItem] = useState();
+  const [attributes, setAttributes] = useState();
+  const [price, setPrice] = useState();
+
+  useEffect(() => {
+    getProductById(id).then((res) => {
+      setItem(res.data);
+      setAttributes(res.data.attributes);
+    });
+  }, [id]);
+
+  const onModifyPrice = (price) =>{
+    setPrice(price);
+  }
+  return (
+    <div>
+      {item && (
+        <div className="col-10 offset-1 mt-5">
+          <div>
+            <div className="card mb-3 border-0">
+              <div className="row g-0">
+                <div className="col-md-4">
+                  <img
+                    src={require(`../static/images/${item.main}`)}
+                    className="img-fluid rounded-start"
+                    style={{ width: "600px", height: "400px" }}
+                    alt=""
+                  />
+                </div>
+                <div className="col-md-8">
+                  <div className="card-body">
+                    <h1 className="card-title text-danger fw-bolder">
+                      {item.name}
+                    </h1>
+                    <hr />
+                    <p className="card-text fw-bold fs-5">Mã SP: {item.code}</p>
+                    <hr />
+                    <h4 className="card-text fw-bolder text-danger fs-5">
+                      Giá: {price}
+                    </h4>
+                    <hr />
+                    <div className="div">
+                      <label className="mr-5">Chọn size</label>
+                      {attributes.map((i, index) =>(
+                        <div
+                          className="form-check form-check-inline"
+                          key={i.id}
+                        >
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="inlineRadioOptions"
+                            id="inlineRadio3"
+                            defaultValue="option3"
+                            onChange={() => onModifyPrice(i.price)}
+                          />
+                          <label className="form-check-label">
+                          {i.size}
+                          </label>
+                        </div>
+                      ))}                      
+                    </div>
+                    <hr />
+                    <NavLink to="/" className="btn btn-primary text-white">
+                      Mua hàng
+                    </NavLink>
+                  </div>
+                </div>
+                <div className="row offset-2 mt-5">
+                  <img
+                    src={require(`../static/images/${item.images[0]}`)}
+                    alt="..."
+                    className="img-thumbnail mr-3"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                  <img
+                    src={require(`../static/images/${item.images[1]}`)}
+                    alt="..."
+                    className="img-thumbnail mr-3"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                  <img
+                    src={require(`../static/images/${item.images[2]}`)}
+                    alt="..."
+                    className="img-thumbnail mr-3"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                  <img
+                    src={require(`../static/images/${item.images[3]}`)}
+                    alt="..."
+                    className="img-thumbnail mr-3"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                  <img
+                    src={require(`../static/images/${item.images[4]}`)}
+                    alt="..."
+                    className="img-thumbnail mr-3"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-8 offset-2">
+              <div className="container-fluid padding">
+                <div className="row welcome text-center text-dark mb-2 mt-5">
+                  <div className="col-12">
+                    <p className="display-4" style={{ fontSize: "34px" }}>
+                      Mô tả sản phẩm
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="container-fluid padding">
+                <h5 className="font-italic">
+                  {item.description}
+                </h5>
+              </div>
+            </div>
+          </div>
+          <div className="col-8 offset-2">
+            <div className="container-fluid padding">
+              <div className="row welcome text-center text-dark mb-5 mt-5">
+                <div className="col-12">
+                  <p className="display-4" style={{ fontSize: "34px" }}>
+                    Sản phẩm liên quan
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="container-fluid padding">
+              <div className="row padding">
+                <div className="col-md-3 mb-3">
+                  <div
+                    className="card text-center .bg-light"
+                    data-toggle="tooltip"
+                    title="Alphalava"
+                  >
+                    <div className="card-body">
+                      <img className="card-img-top mb-5" src={product} alt="" />
+                      <h4 className="card-title">Alphalava</h4>
+                      <p className="card-text">3.490.000₫</p>
+                      <NavLink
+                        to={`/product/detail/1`}
+                        exact
+                        className="btn btn-primary"
+                      >
+                        Mua hàng
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 mb-3">
+                  <div
+                    className="card text-center .bg-light"
+                    data-toggle="tooltip"
+                    title="Alphalava"
+                  >
+                    <div className="card-body">
+                      <img className="card-img-top mb-5" src={product} alt="" />
+                      <h4 className="card-title">Alphalava</h4>
+                      <p className="card-text">3.490.000₫</p>
+                      <NavLink
+                        to={`/product/detail/1`}
+                        exact
+                        className="btn btn-primary"
+                      >
+                        Mua hàng
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 mb-3">
+                  <div
+                    className="card text-center .bg-light"
+                    data-toggle="tooltip"
+                    title="Alphalava"
+                  >
+                    <div className="card-body">
+                      <img className="card-img-top mb-5" src={product} alt="" />
+                      <h4 className="card-title">Alphalava</h4>
+                      <p className="card-text">3.490.000₫</p>
+                      <NavLink
+                        to={`/product/detail/1`}
+                        exact
+                        className="btn btn-primary"
+                      >
+                        Mua hàng
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 mb-3">
+                  <div
+                    className="card text-center .bg-light"
+                    data-toggle="tooltip"
+                    title="Alphalava"
+                  >
+                    <div className="card-body">
+                      <img className="card-img-top mb-5" src={product} alt="" />
+                      <h4 className="card-title">Alphalava</h4>
+                      <p className="card-text">3.490.000₫</p>
+                      <NavLink
+                        to={`/product/detail/1`}
+                        exact
+                        className="btn btn-primary"
+                      >
+                        Mua hàng
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductDetail;
