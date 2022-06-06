@@ -7,6 +7,9 @@ import { useState, useEffect, React } from "react";
 import { getAllProducts, getTotalPage } from "./api/ProductApi";
 import ProductDetail from "./components/ProductDetail";
 import Cart from "./components/Cart";
+import Checkout from "./components/Checkout";
+import Order from "./components/Order";
+import OrderDetail from "./components/OrderDetail";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -39,6 +42,15 @@ function App() {
           </Route>
           <Route path="/cart" exact>
             <Cart></Cart>
+          </Route>
+          <Route path="/checkout" exact>
+            <Checkout></Checkout>
+          </Route>
+          <Route path="/order" exact>
+            <Order></Order>
+          </Route>
+          <Route path="/order/detail/:id" exact>
+            <OrderDetail></OrderDetail>
           </Route>
         </Switch>
         <Footer></Footer>
