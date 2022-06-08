@@ -7,23 +7,36 @@ import first from '../static/images/slider_1_image.jpg';
 import second from '../static/images/slider_2_image.jpg';
 import third from '../static/images/slider_4_image.jpg';
 import fourth from '../static/images/slider_5_image.jpg'
-const Home = (props) => {
-  var rows = new Array(props.total).fill(0).map((zero, index) => (
+import React, {useState, useEffect} from "react";
+import { getAllProducts, getTotalPage } from "../api/ProductApi";
+
+const Home = () => {
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState({});
+
+  var rows = new Array(total).fill(0).map((zero, index) => (
     <li
-      className={props.page === index + 1 ? "page-item active" : "page-item"}
+      className={page === index + 1 ? "page-item active" : "page-item"}
       key={index}
     >
       <button
         className="page-link"
-        onClick={() => onHandleChangePage(index + 1)}
+        onClick={() => onChangePage(index + 1)}
       >
         {index + 1}
       </button>
     </li>
   ));
 
-  const onHandleChangePage = (page) => {
-    props.onChangePage(page);
+  useEffect(() => {
+    getAllProducts(page, 9).then((response) => setProducts(response.data));
+    getTotalPage().then((res) => setTotal(res.data));
+  }, [page]);
+
+
+  const onChangePage = (page) => {
+    setPage(page);
   };
 
   return (
@@ -38,10 +51,10 @@ const Home = (props) => {
         </ul>
         <div className="carousel-inner">
           <div className="carousel-item active">
-            <img src={first} alt=""/>
+            <img src={second} alt=""/>
           </div>
           <div className="carousel-item">
-            <img src={second} alt=""/>
+            <img src={first} alt=""/>
           </div>
           <div className="carousel-item">
             <img src={third} alt=""/>
@@ -77,8 +90,8 @@ const Home = (props) => {
       </div>
       <div className="container padding">
         <div className="row padding d-flex">
-          {props.products &&
-            props.products.map((item, index) => (
+          {products &&
+            products.map((item, index) => (
               <div className="col-4 border-dark mb-5" key={index}>
                 <div
                   className="card text-center bg-light"
@@ -111,20 +124,20 @@ const Home = (props) => {
       </div>
       <nav aria-label="Page navigation example">
         <ul className="pagination offset-5">
-          <li className={props.page === 1 ? "page-item disabled" : "page-item"}>
-            <button className="page-link" onClick={() => onHandleChangePage(1)}>
+          <li className={page === 1 ? "page-item disabled" : "page-item"}>
+            <button className="page-link" onClick={() => onChangePage(1)}>
               First
             </button>
           </li>
           {rows}
           <li
             className={
-              props.page === props.total ? "page-item disabled" : "page-item"
+              page === total ? "page-item disabled" : "page-item"
             }
           >
             <button
               className="page-link"
-              onClick={() => onHandleChangePage(props.total)}
+              onClick={() => onChangePage(total)}
             >
               Last
             </button>

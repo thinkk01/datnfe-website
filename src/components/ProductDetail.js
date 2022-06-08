@@ -3,12 +3,16 @@ import { NavLink } from "react-router-dom";
 import product from "../static/images/cate.jpg";
 import { getProductById } from "../api/ProductApi";
 import { useParams } from "react-router-dom";
+import {modifyCartItem } from "../api/CartApi";
+import { toast } from "react-toastify";
 
-const ProductDetail = (props) => {
+const ProductDetail = () => {
   const { id } = useParams();
   const [item, setItem] = useState();
   const [attributes, setAttributes] = useState();
   const [price, setPrice] = useState();
+  const [stock, setStock] = useState();
+  const [flag, setFlag] = useState();
 
   useEffect(() => {
     getProductById(id).then((res) => {
@@ -17,8 +21,28 @@ const ProductDetail = (props) => {
     });
   }, [id]);
 
-  const onModifyPrice = (price) =>{
+  const onModify = (price, stock, flag) =>{
     setPrice(price);
+    setStock(stock);
+    setFlag(flag);
+  }
+
+  const onAddCartHandler = async (accountId, attributeId) =>{
+    if(flag){
+      const data = {
+        accountId: accountId,
+        attributeId: attributeId,
+        quantity: 1,
+      };
+      try {
+        await modifyCartItem(data);
+        toast.success("Thêm vào giỏ hàng thành công.");
+      } catch (error) {
+        toast.error(error.response.data.Errors);
+      }
+    }else{
+      toast.warning("Mời chọn size.");
+    }
   }
   return (
     <div>
@@ -44,8 +68,11 @@ const ProductDetail = (props) => {
                     <p className="card-text fw-bold fs-5">Mã SP: {item.code}</p>
                     <hr />
                     <h4 className="card-text fw-bolder text-danger fs-5">
-                      Giá: {price}
+                      Giá: {price && price.toLocaleString() + ' đ'} 
                     </h4>
+                    <h6 className="card-text fw-bolder fs-5">
+                      Sản phẩm còn: {stock && stock + ' đôi'} 
+                    </h6>
                     <hr />
                     <div className="div">
                       <label className="mr-5">Chọn size</label>
@@ -60,7 +87,7 @@ const ProductDetail = (props) => {
                             name="inlineRadioOptions"
                             id="inlineRadio3"
                             defaultValue="option3"
-                            onChange={() => onModifyPrice(i.price)}
+                            onChange={() => onModify(i.price, i.stock, i.id)}
                           />
                           <label className="form-check-label">
                           {i.size}
@@ -69,9 +96,9 @@ const ProductDetail = (props) => {
                       ))}                      
                     </div>
                     <hr />
-                    <NavLink to="/" className="btn btn-primary text-white">
-                      Mua hàng
-                    </NavLink>
+                    <button onClick={() => onAddCartHandler(1, flag)} className="btn btn-primary text-white">
+                      Thêm vào giỏ
+                    </button>
                   </div>
                 </div>
                 <div className="row offset-2 mt-5">
