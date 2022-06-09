@@ -13,7 +13,7 @@ import { ToastContainer} from 'react-toastify';
 
 function App() {
   return (
-    <div className="col-10 offset-1">
+    <div>
       <Header></Header>
       <Switch>
         <Route path="/" exact>

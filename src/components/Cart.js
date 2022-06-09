@@ -27,9 +27,6 @@ const Cart = () => {
     }
   };
 
-  const onChangeHandler = (num) =>{
-    console.log(num);
-  }
   return (
     <div>
       <div className="container-fluid padding mb-5">
@@ -65,13 +62,13 @@ const Cart = () => {
                         />
                       </th>
                       <td>
-                        <h5 className="card-title mt-5 bolder">{item.name}</h5>
+                        <h6 className="card-title mt-5 bolder">{item.name}</h6>
                       </td>
                       <td>
-                        <h5 className="card-title mt-5 bolder">{item.size}</h5>
+                        <h6 className="card-title mt-5 bolder">{item.size}</h6>
                       </td>
                       <td>
-                        <h5 className="card-title mt-5 bolder">{item.price}</h5>
+                        <h6 className="card-title mt-5 bolder">{item.price.toLocaleString()}</h6>
                       </td>
                       <td>
                         <div className="mt-5">
@@ -83,9 +80,8 @@ const Cart = () => {
                           </button>
                           <input
                             type="number"
-                            style={{ width: "50px" }}
+                            style={{ width: "40px" }}
                             value={item.quantity}
-                            onChange={(e) => onChangeHandler(e)}
                             name="quantity"
                             max={100}
                             min={1}
@@ -95,13 +91,13 @@ const Cart = () => {
                             onClick={() => modifyCartItemHandler(item.id, -1)}
                           >
                             -
-                          </button>
+                          </button>                       
                         </div>
                       </td>
                       <td>
-                        <h5 className="card-title mt-5 bolder">
-                          {item.quantity * item.price}
-                        </h5>
+                        <h6 className="card-title mt-5 bolder">
+                          {(item.quantity * item.price).toLocaleString()}
+                        </h6>
                       </td>
                       <td>
                         <NavLink to="">
@@ -130,7 +126,7 @@ const Cart = () => {
                 </NavLink>
                 <h5 className="ml-5">Tổng tiền:</h5>
               </div>
-              <div style={{ marginLeft: "250px" }}>
+              <div style={{ marginLeft: "150px" }}>
                 <h4>3.490.000₫</h4>
               </div>
             </div>
