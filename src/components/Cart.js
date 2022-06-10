@@ -82,7 +82,7 @@ const Cart = () => {
                             type="number"
                             style={{ width: "40px" }}
                             value={item.quantity}
-                            name="quantity"
+                            onChange={() => console.log(item.quantity)}
                             max={100}
                             min={1}
                           />
