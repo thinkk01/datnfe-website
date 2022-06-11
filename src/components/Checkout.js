@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getAllProvince } from "../api/ProvinceApi";
 import { getCartItemByAccountId } from "../api/CartApi";
 import { useForm } from "react-hook-form";
-
+import {createOrder} from '../api/OrderApi';
+import { toast } from "react-toastify";
 const Checkout = () => {
   const [amount, setAmount] = useState();
   const [cart, setCart] = useState([]);
@@ -51,11 +52,23 @@ const Checkout = () => {
       total: amount,
       note: data.note,
       isPending: data.payment,
-      orderStatus: 1,
-      account: 1
+      accountId: 1,
+      orderDetails: cart.map((item) => (
+        {
+          "quantity": item.quantity,
+          "originPrice": item.price,
+          "sellPrice": item.price,
+          "attribute":{
+            "id": item.id
+          }
+          }
+      ))
     }
-    
-    console.log(order);
+    try {
+      await createOrder(order);
+    } catch (error) {
+      toast.error("Error");
+    }
   }
   return (
     <div className=" pb-3">

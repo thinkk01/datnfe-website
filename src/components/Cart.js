@@ -5,13 +5,20 @@ import { toast } from "react-toastify";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
-
+  const [amount, setAmount] = useState();
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getCartItemByAccountId(1).then((resp) => setCart(resp.data));
+    getCartItemByAccountId(1).then((resp) => {
+      setCart(resp.data);
+      const result = resp.data.reduce(
+        (price, item) => price + item.price * item.quantity,
+        0
+      );
+      setAmount(result);
+    });
   };
 
   const modifyCartItemHandler = async (attr, quantity) => {
@@ -127,7 +134,7 @@ const Cart = () => {
                 <h5 className="ml-5">Tổng tiền:</h5>
               </div>
               <div style={{ marginLeft: "150px" }}>
-                <h4>3.490.000₫</h4>
+                <h4>{amount && amount.toLocaleString()}₫</h4>
               </div>
             </div>
           </div>
