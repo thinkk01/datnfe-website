@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import product from "../static/images/cate.jpg";
 import { getProductById } from "../api/ProductApi";
 import { useParams } from "react-router-dom";
-import {modifyCartItem } from "../api/CartApi";
+import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
 
 const ProductDetail = () => {
@@ -21,14 +21,14 @@ const ProductDetail = () => {
     });
   }, [id]);
 
-  const onModify = (price, stock, flag) =>{
+  const onModify = (price, stock, flag) => {
     setPrice(price);
     setStock(stock);
     setFlag(flag);
-  }
+  };
 
-  const onAddCartHandler = async (accountId, attributeId) =>{
-    if(flag){
+  const onAddCartHandler = async (accountId, attributeId) => {
+    if (flag) {
       const data = {
         accountId: accountId,
         attributeId: attributeId,
@@ -40,10 +40,10 @@ const ProductDetail = () => {
       } catch (error) {
         toast.error(error.response.data.Errors);
       }
-    }else{
+    } else {
       toast.warning("Mời chọn size.");
     }
-  }
+  };
   return (
     <div>
       {item && (
@@ -68,15 +68,15 @@ const ProductDetail = () => {
                     <p className="card-text fw-bold fs-5">Mã SP: {item.code}</p>
                     <hr />
                     <h4 className="card-text fw-bolder text-danger fs-5">
-                      Giá: {price && price.toLocaleString() + ' đ'} 
+                      Giá: {price && price.toLocaleString() + " đ"}
                     </h4>
                     <h6 className="card-text fw-bolder fs-5">
-                      Sản phẩm còn: {stock && stock + ' đôi'} 
+                      Sản phẩm còn: {stock && stock + " đôi"}
                     </h6>
                     <hr />
                     <div className="div">
                       <label className="mr-5">Chọn size</label>
-                      {attributes.map((i, index) =>(
+                      {attributes.map((i, index) => (
                         <div
                           className="form-check form-check-inline"
                           key={i.id}
@@ -89,16 +89,20 @@ const ProductDetail = () => {
                             defaultValue="option3"
                             onChange={() => onModify(i.price, i.stock, i.id)}
                           />
-                          <label className="form-check-label">
-                          {i.size}
-                          </label>
+                          <label className="form-check-label">{i.size}</label>
                         </div>
-                      ))}                      
+                      ))}
                     </div>
                     <hr />
-                    <button onClick={() => onAddCartHandler(1, flag)} className="btn btn-primary text-white">
+                    <button
+                      onClick={() => onAddCartHandler(1, flag)}
+                      className="btn btn-primary text-white"
+                    >
                       Thêm vào giỏ
                     </button>
+                    <NavLink to="/cart" className="btn btn-secondary ml-2">
+                      Đi đến giỏ hàng
+                    </NavLink>
                   </div>
                 </div>
                 <div className="row offset-2 mt-5">
@@ -146,9 +150,7 @@ const ProductDetail = () => {
                 </div>
               </div>
               <div className="container-fluid padding">
-                <h5 className="font-italic">
-                  {item.description}
-                </h5>
+                <h5 className="font-italic">{item.description}</h5>
               </div>
             </div>
           </div>

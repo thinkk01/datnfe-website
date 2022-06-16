@@ -99,7 +99,7 @@ hr.light {
   width: 100%;
 }
 
-.nav-item a{
+.nav-item a {
   font-weight: bolder;
   font-size: 16px;
 }
@@ -107,7 +107,12 @@ hr.light {
   font-weight: bolder;
 }
 
-.card-img-top img{
+.card-img-top img {
   width: 300px;
   height: 200px;
+}
+#scroll {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
 }

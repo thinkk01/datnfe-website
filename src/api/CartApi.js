@@ -9,3 +9,8 @@ export const modifyCartItem = (data) =>{
     const url = `/api/site/cart-item/modify`;
     return Instance.post(url, data);
 }
+
+export const removeCartItem = (data) =>{
+    const url = `api/site/cart-item/remove`;
+    return Instance.post(url, data);
+}

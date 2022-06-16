@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { getCartItemByAccountId, modifyCartItem } from "../api/CartApi";
+import {
+  getCartItemByAccountId,
+  modifyCartItem,
+  removeCartItem,
+} from "../api/CartApi";
 import { toast } from "react-toastify";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
   const [amount, setAmount] = useState();
+
   useEffect(() => {
     onLoad();
   }, []);
@@ -30,7 +35,20 @@ const Cart = () => {
     try {
       await modifyCartItem(data).then((res) => onLoad());
     } catch (error) {
-      toast.error(error.response.data.Errors);
+      toast.warning(error.response.data.Errors);
+    }
+  };
+
+  const removeCartItemHandler = async (attr, quantity) => {
+    const data = {
+      accountId: 1,
+      attributeId: attr,
+      quantity: quantity,
+    };
+    try {
+      await removeCartItem(data).then((res) => onLoad());
+    } catch (error) {
+      toast.warning(error.response.data.Errors);
     }
   };
 
@@ -38,10 +56,8 @@ const Cart = () => {
     <div>
       <div className="container-fluid padding mb-5">
         <div className="row welcome mb-5 mt-5">
-          <div className="col-10 offset-1 text ">
-            <p className="text-danger" style={{ fontSize: "34px" }}>
-              Giỏ hàng của bạn
-            </p>
+          <div className="row col-10 offset-1 text ">
+            <h4 className="text-danger">Giỏ hàng của bạn</h4>
           </div>
           <div className="row col-10 offset-1 mb-5">
             <table className="table">
@@ -75,7 +91,9 @@ const Cart = () => {
                         <h6 className="card-title mt-5 bolder">{item.size}</h6>
                       </td>
                       <td>
-                        <h6 className="card-title mt-5 bolder">{item.price.toLocaleString()}</h6>
+                        <h6 className="card-title mt-5 bolder">
+                          {item.price.toLocaleString()} Đ
+                        </h6>
                       </td>
                       <td>
                         <div className="mt-5">
@@ -87,10 +105,15 @@ const Cart = () => {
                           </button>
                           <input
                             type="number"
+                            name="quantity"
                             style={{ width: "40px" }}
                             value={item.quantity}
-                            onChange={() => console.log(item.quantity)}
-                            max={100}
+                            onChange={(e) =>
+                              modifyCartItemHandler(
+                                item.id,
+                                e.target.value - item.quantity
+                              )
+                            }
                             min={1}
                           />
                           <button
@@ -98,44 +121,59 @@ const Cart = () => {
                             onClick={() => modifyCartItemHandler(item.id, -1)}
                           >
                             -
-                          </button>                       
+                          </button>
                         </div>
                       </td>
                       <td>
                         <h6 className="card-title mt-5 bolder">
-                          {(item.quantity * item.price).toLocaleString()}
+                          {(item.quantity * item.price).toLocaleString()} Đ
                         </h6>
                       </td>
                       <td>
-                        <NavLink to="">
+                        <button
+                          className="border-0 rounded-circle"
+                          style={{ backgroundColor: "white" }}
+                          onClick={() =>
+                            removeCartItemHandler(item.id, item.quantity)
+                          }
+                        >
                           <i
                             className="fa fa-trash-o mt-5 text-danger"
                             style={{ fontSize: "24px" }}
                           />
-                        </NavLink>
+                        </button>
                       </td>
                     </tr>
                   ))}
               </tbody>
             </table>
             <hr className="my-4" />
-            <div className="row ml-5">
-              <div className="row">
-                <NavLink to="button" className="btn btn-secondary mr-2">
+            <div className="row container-fluid ml-5">
+                <NavLink
+                  to="/"
+                  className="btn btn-primary mb-3 btn-lg mr-3"
+                  exact
+                >
                   Tiếp tục mua hàng
                 </NavLink>
                 <NavLink
                   to="/checkout"
-                  className="btn btn-secondary mr-5"
+                  className={
+                    cart.length === 0
+                      ? "btn btn-primary mb-3 btn-lg disabled"
+                      : "btn btn-primary mb-3 btn-lg"
+                  }
                   exact
                 >
                   Tiến hành thanh toán
                 </NavLink>
-                <h5 className="ml-5">Tổng tiền:</h5>
-              </div>
-              <div style={{ marginLeft: "150px" }}>
-                <h4>{amount && amount.toLocaleString()}₫</h4>
-              </div>
+                <div
+                  style={{ marginLeft: 370 }}
+                  className="row"
+                >
+                  <h4 className="mr-5">Tổng tiền: </h4>
+                  <h4>{amount?.toLocaleString()}₫</h4>
+                </div>
             </div>
           </div>
         </div>

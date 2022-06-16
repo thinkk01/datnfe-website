@@ -4,6 +4,7 @@ import logo from '../static/images/logo-sneaker1.jpg';
 import { NavLink } from "react-router-dom";
 
 const Header = () => {
+
   return (
     <div>
       {/* Navigation */}
@@ -50,8 +51,10 @@ const Header = () => {
             </button>
           </form>
           <NavLink to="" className="btn btn-primary">Đăng nhập</NavLink>
+          
         </div>
-      </nav>     
+      </nav>    
+      
     </div>
   );
 };
