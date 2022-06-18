@@ -22,6 +22,7 @@ function App() {
   const handleShow = () => setShow(true);
   const [size, setSize] = useState("");
   const [temp, setTemp] = useState([]);
+  const [outStock, setOutStock] = useState([]);
 
   const changeSizeHandler = (event) => {
     setSize(event.target.value/10);
@@ -29,6 +30,10 @@ function App() {
 
   const backHandler = (data) =>{
     setTemp(data);
+  }
+
+  const outStockHandler = (data) =>{
+    setOutStock(data);
   }
   return (
     <div className="col-10 offset-1">
@@ -44,7 +49,7 @@ function App() {
           <ProductDetail></ProductDetail>
         </Route>
         <Route path="/cart" exact>
-          <Cart backHandler={backHandler}></Cart>
+          <Cart backHandler={backHandler} outStockHandler={outStockHandler}></Cart>
         </Route>
         <Route path="/checkout" exact>
           <Checkout temp={temp}></Checkout>
@@ -56,7 +61,7 @@ function App() {
           <OrderDetail></OrderDetail>
         </Route>
         <Route path="/out-of-stock" exact>
-          <OutStock></OutStock>
+          <OutStock outStock={outStock} setOutStock={setOutStock}></OutStock>
         </Route>
       </Switch>
       <Footer></Footer>
@@ -76,7 +81,7 @@ function App() {
                 className="mb-3"
                 controlId="exampleForm.ControlInput1"
               >
-                <Form.Label>Nhập chiều dài chân(mm)</Form.Label>
+                <Form.Label>Nhập chiều dài bàn chân(mm)</Form.Label>
                 <Form.Control type="number" min={220} max={320} autoFocus onChange={changeSizeHandler}/>
                 {size && <Form.Label className="ml-1 mt-3">{size}</Form.Label>}
               </Form.Group>

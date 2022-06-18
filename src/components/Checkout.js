@@ -70,9 +70,12 @@ const Checkout = (props) => {
       })),
     };
     try {
-      await console.log(order);
+      await createOrder(order)
+      .then(() => {
+        history.push('/order')
+      });
     } catch (error) {
-      toast.error("Error");
+      toast.error("Đơn hàng phát sinh lỗi.");
     }
   };
   return (
