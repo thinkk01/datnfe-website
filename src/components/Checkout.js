@@ -4,14 +4,17 @@ import { getCartItemByAccountId } from "../api/CartApi";
 import { useForm } from "react-hook-form";
 import { createOrder } from "../api/OrderApi";
 import { toast } from "react-toastify";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
+import {backAttribute} from '../api/AttributeApi'
 
-const Checkout = () => {
+const Checkout = (props) => {
   const [amount, setAmount] = useState();
   const [cart, setCart] = useState([]);
   const [info, setInfo] = useState();
   const [district, setDistrict] = useState();
   const [ward, setWard] = useState();
+
+  const history = useHistory();
 
   const {
     register,
@@ -33,6 +36,9 @@ const Checkout = () => {
       );
       setAmount(result);
     });
+    setTimeout(() => {
+      backAttribute(props.temp).then(() => history.push('/cart'));
+    }, 60000);
   };
 
   const onLoadDistrictHandler = (id) => {

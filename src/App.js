@@ -14,16 +14,22 @@ import Product from "./components/Product";
 import { Button, Form } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { useState } from "react";
+import OutStock from "./components/OutStock";
 
 function App() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [size, setSize] = useState("");
+  const [temp, setTemp] = useState([]);
 
   const changeSizeHandler = (event) => {
     setSize(event.target.value/10);
   };
+
+  const backHandler = (data) =>{
+    setTemp(data);
+  }
   return (
     <div className="col-10 offset-1">
       <Header></Header>
@@ -38,16 +44,19 @@ function App() {
           <ProductDetail></ProductDetail>
         </Route>
         <Route path="/cart" exact>
-          <Cart></Cart>
+          <Cart backHandler={backHandler}></Cart>
         </Route>
         <Route path="/checkout" exact>
-          <Checkout></Checkout>
+          <Checkout temp={temp}></Checkout>
         </Route>
         <Route path="/order" exact>
           <Order></Order>
         </Route>
         <Route path="/order/detail/:id" exact>
           <OrderDetail></OrderDetail>
+        </Route>
+        <Route path="/out-of-stock" exact>
+          <OutStock></OutStock>
         </Route>
       </Switch>
       <Footer></Footer>

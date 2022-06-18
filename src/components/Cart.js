@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import {
   getCartItemByAccountId,
   modifyCartItem,
   removeCartItem,
 } from "../api/CartApi";
+import { cacheAttribute } from "../api/AttributeApi";
 import { toast } from "react-toastify";
 
-const Cart = () => {
+const Cart = (props) => {
   const [cart, setCart] = useState([]);
   const [amount, setAmount] = useState();
+
+  const history = useHistory();
 
   useEffect(() => {
     onLoad();
@@ -50,6 +53,17 @@ const Cart = () => {
     } catch (error) {
       toast.warning(error.response.data.Errors);
     }
+  };
+
+  const checkOutHandler = () => {
+      const res = cart.map((item) => ({
+        "attributeId": item.id,
+        "quantity": item.quantity
+      }))
+      cacheAttribute(res).then(() => {
+        props.backHandler(res);
+        history.push('/checkout');
+      }).catch(history.push('/out-of-stock'));
   };
 
   return (
@@ -149,31 +163,29 @@ const Cart = () => {
             </table>
             <hr className="my-4" />
             <div className="row container-fluid ml-5">
-                <NavLink
-                  to="/"
-                  className="btn btn-primary mb-3 btn-lg mr-3"
-                  exact
-                >
-                  Tiếp tục mua hàng
-                </NavLink>
-                <NavLink
-                  to="/checkout"
-                  className={
-                    cart.length === 0
-                      ? "btn btn-primary mb-3 btn-lg disabled"
-                      : "btn btn-primary mb-3 btn-lg"
-                  }
-                  exact
-                >
-                  Tiến hành thanh toán
-                </NavLink>
-                <div
-                  style={{ marginLeft: 370 }}
-                  className="row"
-                >
-                  <h4 className="mr-5">Tổng tiền: </h4>
-                  <h4>{amount?.toLocaleString()}₫</h4>
-                </div>
+              <NavLink
+                to="/"
+                className="btn btn-primary mb-3 btn-lg mr-3"
+                exact
+              >
+                Tiếp tục mua hàng
+              </NavLink>
+              <button
+                // to="/checkout"
+                className={
+                  cart.length === 0
+                    ? "btn btn-primary mb-3 btn-lg disabled"
+                    : "btn btn-primary mb-3 btn-lg"
+                }
+                onClick={checkOutHandler}
+                // exact
+              >
+                Tiến hành thanh toán
+              </button>
+              <div style={{ marginLeft: 370 }} className="row">
+                <h4 className="mr-5">Tổng tiền: </h4>
+                <h4>{amount?.toLocaleString()}₫</h4>
+              </div>
             </div>
           </div>
         </div>

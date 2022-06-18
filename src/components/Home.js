@@ -200,7 +200,7 @@ const Home = () => {
           </li>
         </ul>
       </nav>
-      <div className="container-fluid padding mt-5">
+      {/* <div className="container-fluid padding mt-5">
         <div className="row welcome">
           <div className="text-danger">
             <h4 className="title">Xem nhiều nhất</h4>
@@ -307,7 +307,7 @@ const Home = () => {
               </div>
             ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
