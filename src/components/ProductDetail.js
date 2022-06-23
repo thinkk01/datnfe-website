@@ -70,7 +70,7 @@ const ProductDetail = () => {
                     <h4 className="card-text fw-bolder text-danger fs-5">
                       Giá: {price && price.toLocaleString() + " đ"}
                     </h4>
-                    <h6 className="card-text fw-bolder fs-5">
+                    <h6 className="card-text fw-bolder fs-5" hidden>
                       Sản phẩm còn: {stock && stock + " đôi"}
                     </h6>
                     <hr />
@@ -88,6 +88,7 @@ const ProductDetail = () => {
                             id="inlineRadio3"
                             defaultValue="option3"
                             onChange={() => onModify(i.price, i.stock, i.id)}
+                            disabled={i.stock === 0}
                           />
                           <label className="form-check-label">{i.size}</label>
                         </div>

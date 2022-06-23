@@ -36,9 +36,6 @@ const Checkout = (props) => {
       );
       setAmount(result);
     });
-    setTimeout(() => {
-      backAttribute(props.temp).then(() => history.push('/cart'));
-    }, 60000);
   };
 
   const onLoadDistrictHandler = (id) => {
@@ -56,6 +53,7 @@ const Checkout = (props) => {
       fullname: data.name,
       phone: data.phone,
       address: `${data.address}, ${data.ward}, ${data.district}, ${data.province}`,
+      email: data.email,
       total: amount,
       note: data.note,
       isPending: data.payment,
@@ -75,7 +73,7 @@ const Checkout = (props) => {
         history.push('/order')
       });
     } catch (error) {
-      toast.error("Đơn hàng phát sinh lỗi.");
+      history.push('/out-of-stock');
     }
   };
   return (

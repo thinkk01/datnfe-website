@@ -1,10 +1,9 @@
 import React from "react";
-import '../static/css/style.css';
-import logo from '../static/images/logo-sneaker1.jpg';
+import "../static/css/style.css";
+import logo from "../static/images/logo-sneaker1.jpg";
 import { NavLink } from "react-router-dom";
 
 const Header = () => {
-
   return (
     <div>
       {/* Navigation */}
@@ -46,15 +45,21 @@ const Header = () => {
               type="search"
               aria-label="Search"
             />
-            <button className="btn btn-dark my-2 my-sm-0" type="submit">
-              Tìm kiếm
-            </button>
+            <i
+              class="fa fa-search ml-1"
+              aria-hidden="true"
+              style={{ fontSize: "24px" }}
+            ></i>
           </form>
-          <NavLink to="" className="btn btn-primary">Đăng nhập</NavLink>
-          
+          <NavLink to="" className="text-dark ml-3">
+            <i
+              class="fa fa-user"
+              aria-hidden="true"
+              style={{ fontSize: "24px" }}
+            ></i>
+          </NavLink>
         </div>
-      </nav>    
-      
+      </nav>
     </div>
   );
 };

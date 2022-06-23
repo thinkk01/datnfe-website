@@ -32,55 +32,28 @@ const Product = () => {
           <div className="col-3">
             <div className="col">
               <h4 className="text-danger fw-bolder">Sản phẩm</h4>
-              <NavLink to="/" className="dropdown-item">
-                Giày Nam
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Giày Nữ
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Giày Bóng Đá
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Giày Bóng Rổ
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Giày Chạy Bộ
-              </NavLink>
+              <ul class="list-group">
+                <li class="list-group-item active" aria-current="true">
+                  An active item
+                </li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+                <li class="list-group-item">A fourth item</li>
+                <li class="list-group-item">And a fifth one</li>
+              </ul>
             </div>
-            <div className="col mt-5">
-              <h4 className="text-danger fw-bolder">Chất liệu</h4>
-              <NavLink to="/" className="dropdown-item">
-                Polyester
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Cotton
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Suede | Da lộn
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Leather | Da
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Flannel
-              </NavLink>
-            </div>
-            <div className="col mt-5">
+
+            <div className="col mt-3">
               <h4 className="text-danger fw-bolder">Giá</h4>
-              <NavLink to="/" className="dropdown-item">
-                {" "}
-                Dưới 1 triệu
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                1 triệu - 2 triệu
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                2 triệu - 3 triệu
-              </NavLink>
-              <NavLink to="/" className="dropdown-item">
-                Trên 3 triệu
-              </NavLink>
+              <ul class="list-group">
+                <li class="list-group-item active" aria-current="true">
+                  An active item
+                </li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+                <li class="list-group-item">A fourth item</li>
+                <li class="list-group-item">And a fifth one</li>
+              </ul>
             </div>
           </div>
           <div className="col">

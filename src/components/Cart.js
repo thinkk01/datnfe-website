@@ -4,6 +4,7 @@ import {
   getCartItemByAccountId,
   modifyCartItem,
   removeCartItem,
+  isEnoughCartItem
 } from "../api/CartApi";
 import { cacheAttribute } from "../api/AttributeApi";
 import { toast } from "react-toastify";
@@ -57,14 +58,12 @@ const Cart = (props) => {
   };
 
   const checkOutHandler = () => {
-      const res = cart.map((item) => ({
-        "attributeId": item.id,
-        "quantity": item.quantity
-      }))
-      cacheAttribute(res).then(() => {
-        props.backHandler(res);
-        history.push('/checkout');
-      }).catch(history.push('/out-of-stock'));
+     for(let i = 0; i < cart.length; i++){
+      isEnoughCartItem(cart[i].id, cart[i].quantity)
+      .then()
+      .catch(() => history.push('/out-of-stock'));
+     }
+     history.push('/checkout')
   };
 
   return (

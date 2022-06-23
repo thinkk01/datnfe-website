@@ -14,3 +14,8 @@ export const removeCartItem = (data) =>{
     const url = `api/site/cart-item/remove`;
     return Instance.post(url, data);
 }
+
+export const isEnoughCartItem = (id, quantity) =>{
+    const url = `api/site/cart-item/is-enough?id=${id}&quantity=${quantity}`;
+    return Instance.get(url);
+}

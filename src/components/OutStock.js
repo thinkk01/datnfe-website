@@ -1,21 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import icon from "../static/images/icon_216992.png";
 import { modifyCartItem, getCartItemByAccountId } from "../api/CartApi";
 import { toast } from "react-toastify";
 
 const OutStock = (props) => {
+  const [cart, setCart] = useState([]);
   const history = useHistory();
 
+  useEffect(() => {
+    onLoad();
+  }, []);
+
+  const onLoad = () => {
+    getCartItemByAccountId(1).then((resp) => {
+      setCart(resp.data);
+    });
+  };
+
   const modifyCartItemHandler = () => {
-    for(let i = 0; i < props.outStock.length; i++){
-      if(props.outStock[i].quantity > props.outStock[i].stock){
-        modifyCartItem(props.outStock[i].id, props.outStock[i].stock - props.outStock[i].quantity)
-        .then((res) => console.log(res.data))
-        .catch((error) => {
-          toast.warning("Xin vui lòng quay lại sau. Sản phẩm không khả dụng.");
-          history.push('/');
-        })
+    for (let i = 0; i < props.outStock.length; i++) {
+      if (props.outStock[i].quantity > props.outStock[i].stock) {
+        modifyCartItem(
+          props.outStock[i].id,
+          props.outStock[i].stock - props.outStock[i].quantity
+        )
+          .then((res) => console.log(res.data))
+          .catch((error) => {
+            toast.warning(
+              "Xin vui lòng quay lại sau. Sản phẩm không khả dụng."
+            );
+            history.push("/");
+          });
       }
     }
   };
@@ -34,12 +50,9 @@ const OutStock = (props) => {
       <div className="container-fluid padding mb-1">
         <div className="row welcome mb-5 mt-5">
           <div className="row col-10 offset-1 text mb-2">
-            <i
-              className="fa fa-refresh text-danger mr-1"
-              style={{ fontSize: "24px" }}
-              onClick={modifyCartItemHandler}
-            />
-            <h5>Cập nhật</h5>
+            <button className="btn btn-primary" onClick={modifyCartItemHandler}>
+              Cập nhật <i className="fa fa-refresh" />
+            </button>
           </div>
           <div className="row col-10 offset-1 mb-1">
             <table className="table">
@@ -53,8 +66,8 @@ const OutStock = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {props.outStock &&
-                  props.outStock.map((item, index) => (
+                {cart &&
+                  cart.map((item, index) => (
                     <tr key={index}>
                       <th scope="row">
                         <img
@@ -106,6 +119,13 @@ const OutStock = (props) => {
               </tbody>
             </table>
             <hr className="my-4" />
+            <NavLink
+              to="/cart"
+              className={cart.length === 0 ? "mb-2 mr-5 disabled" : "mb-2 mr-5"}
+              exact
+            >
+              Quay về giỏ hàng
+            </NavLink>
           </div>
         </div>
       </div>
