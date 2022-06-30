@@ -115,7 +115,7 @@ const Home = () => {
                     <div className="d-flex justify-content-between">
                       <div>
                         <p className="h4 text-primary">
-                          {item.price.toLocaleString()} Đ
+                          {(item.price * (100 - item.discount)/100).toLocaleString()} đ
                         </p>
                       </div>
                     </div>
@@ -146,10 +146,10 @@ const Home = () => {
                           <b>Yêu thích: </b> {item.view} lượt
                         </p>
                         <p className="mb-0 small">
-                          <b>Giá gốc: </b> {item.price.toLocaleString()} Đ
+                          <b>Giá gốc: {item.price.toLocaleString()} đ</b> 
                         </p>
                         <p className="mb-0 small text-danger">
-                          <span className="font-weight-bold">Tiết kiệm: </span> 0 đ (0%)
+                          <span className="font-weight-bold">Tiết kiệm: </span> {(item.price * (item.discount)/100).toLocaleString()} đ ({item.discount}%)
                         </p>
                       </div>
                     </div>

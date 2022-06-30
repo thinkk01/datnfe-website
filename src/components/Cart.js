@@ -4,7 +4,7 @@ import {
   getCartItemByAccountId,
   modifyCartItem,
   removeCartItem,
-  isEnoughCartItem
+  isEnoughCartItem,
 } from "../api/CartApi";
 import { cacheAttribute } from "../api/AttributeApi";
 import { toast } from "react-toastify";
@@ -22,9 +22,10 @@ const Cart = (props) => {
   const onLoad = () => {
     getCartItemByAccountId(1).then((resp) => {
       setCart(resp.data);
-      props.outStockHandler(resp.data)
+      props.outStockHandler(resp.data);
       const result = resp.data.reduce(
-        (price, item) => price + item.price * item.quantity,
+        (price, item) =>
+          price + (item.price * item.quantity * (100 - item.discount)) / 100,
         0
       );
       setAmount(result);
@@ -58,12 +59,12 @@ const Cart = (props) => {
   };
 
   const checkOutHandler = () => {
-     for(let i = 0; i < cart.length; i++){
+    for (let i = 0; i < cart.length; i++) {
       isEnoughCartItem(cart[i].id, cart[i].quantity)
-      .then()
-      .catch(() => history.push('/out-of-stock'));
-     }
-     history.push('/checkout')
+        .then()
+        .catch(() => history.push("/out-of-stock"));
+    }
+    history.push("/checkout");
   };
 
   return (
@@ -105,8 +106,14 @@ const Cart = (props) => {
                         <h6 className="card-title mt-5 bolder">{item.size}</h6>
                       </td>
                       <td>
+                        {item.lastPrice > item.price * (100 - item.discount)/100 && <h6 className="text-danger">Giá đã giảm {(item.lastPrice -item.price * (100 - item.discount)/100).toLocaleString()} đ</h6>}
+                        {item.lastPrice < item.price * (100 - item.discount)/100 && <h6 className="text-danger">Giá đã tăng {(item.price * (100 - item.discount)/100 - item.lastPrice).toLocaleString()} đ</h6>}
                         <h6 className="card-title mt-5 bolder">
-                          {item.price.toLocaleString()} Đ
+                          {(
+                            (item.price * (100 - item.discount)) /
+                            100
+                          ).toLocaleString()}{" "}
+                          đ
                         </h6>
                       </td>
                       <td>
@@ -140,7 +147,11 @@ const Cart = (props) => {
                       </td>
                       <td>
                         <h6 className="card-title mt-5 bolder">
-                          {(item.quantity * item.price).toLocaleString()} Đ
+                          {(
+                            item.quantity *
+                            ((item.price * (100 - item.discount)) / 100)
+                          ).toLocaleString()}{" "}
+                          đ
                         </h6>
                       </td>
                       <td>
@@ -173,7 +184,7 @@ const Cart = (props) => {
               <button
                 // to="/checkout"
                 className="btn btn-primary mb-3 btn-lg"
-                disabled={cart.length === 0 ? 'disabled' : ''}
+                disabled={cart.length === 0 ? "disabled" : ""}
                 onClick={checkOutHandler}
                 // exact
               >

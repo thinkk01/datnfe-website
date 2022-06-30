@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { createOrder } from "../api/OrderApi";
 import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
-import {backAttribute} from '../api/AttributeApi'
+import {getVoucherByCode} from '../api/VoucherApi'
 
 const Checkout = (props) => {
   const [amount, setAmount] = useState();
@@ -13,6 +13,8 @@ const Checkout = (props) => {
   const [info, setInfo] = useState();
   const [district, setDistrict] = useState();
   const [ward, setWard] = useState();
+  const [voucher, setVoucher] = useState('');
+  const [flag, setFlag] = useState(false);
 
   const history = useHistory();
 
@@ -31,13 +33,36 @@ const Checkout = (props) => {
     getCartItemByAccountId(1).then((resp) => {
       setCart(resp.data);
       const result = resp.data.reduce(
-        (price, item) => price + item.price * item.quantity,
+        (price, item) => price + (item.price * item.quantity * (100 - item.discount)) / 100,
         0
       );
       setAmount(result);
     });
   };
 
+  const voucherHandler = (value) =>{
+    setVoucher(value);
+  }
+
+  const useVoucherHandler = () =>{
+    if(flag){
+      toast.warning("Voucher đã được áp dụng.");
+    }else{
+      getVoucherByCode(voucher)
+    .then((resp) => {
+      setAmount((prevState) => prevState * (100 - resp.data.discount)/100);
+      setFlag(true);
+      toast.success("Áp dụng voucher thành công.");
+    })
+    .catch((error) => toast.error(error.response.data.Errors))
+    }
+  }
+
+  const refreshVoucherHandler = () =>{
+    setFlag(false);
+    setVoucher('');
+    onLoad();
+  }
   const onLoadDistrictHandler = (id) => {
     const resp = info.filter((item) => item.name === id);
     setDistrict(resp[0].districts);
@@ -58,10 +83,11 @@ const Checkout = (props) => {
       note: data.note,
       isPending: data.payment,
       accountId: 1,
+      code: voucher,
       orderDetails: cart.map((item) => ({
         quantity: item.quantity,
         originPrice: item.price,
-        sellPrice: item.price,
+        sellPrice: item.price * (100 - item.discount)/100,
         attribute: {
           id: item.id,
         },
@@ -110,9 +136,12 @@ const Checkout = (props) => {
             <li className="list-group-item d-flex justify-content-between bg-light">
               <div className="text-success">
                 <h6 className="my-2">Mã giảm giá</h6>
-                <input className="form-control my-2" type="text" />
-                <button type="button" className="btn btn-primary">
+                <input className="form-control my-2" value={voucher} disabled={flag} type="text" onChange={(e) => voucherHandler(e.target.value)}/>
+                <button type="button" className="btn btn-primary mr-3" onClick={useVoucherHandler}>
                   Áp dụng
+                </button>
+                <button type="button" className="btn btn-primary" onClick={refreshVoucherHandler}>
+                  Làm mới
                 </button>
               </div>
             </li>

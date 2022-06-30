@@ -46,14 +46,14 @@ const Header = () => {
               aria-label="Search"
             />
             <i
-              class="fa fa-search ml-1"
+              className="fa fa-search ml-1"
               aria-hidden="true"
               style={{ fontSize: "24px" }}
             ></i>
           </form>
           <NavLink to="" className="text-dark ml-3">
             <i
-              class="fa fa-user"
+              className="fa fa-user"
               aria-hidden="true"
               style={{ fontSize: "24px" }}
             ></i>

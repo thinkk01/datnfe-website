@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import icon from "../static/images/icon_216992.png";
-import { modifyCartItem, getCartItemByAccountId } from "../api/CartApi";
+import { reloadCartItem, getCartItemByAccountId } from "../api/CartApi";
 import { toast } from "react-toastify";
 
 const OutStock = (props) => {
@@ -18,22 +18,14 @@ const OutStock = (props) => {
     });
   };
 
-  const modifyCartItemHandler = () => {
-    for (let i = 0; i < props.outStock.length; i++) {
-      if (props.outStock[i].quantity > props.outStock[i].stock) {
-        modifyCartItem(
-          props.outStock[i].id,
-          props.outStock[i].stock - props.outStock[i].quantity
-        )
-          .then((res) => console.log(res.data))
-          .catch((error) => {
-            toast.warning(
-              "Xin vui lòng quay lại sau. Sản phẩm không khả dụng."
-            );
-            history.push("/");
-          });
-      }
-    }
+  const reloadCartItemHandler = () => {
+    reloadCartItem(1)
+      .then((resp) => {
+        toast.success(resp.data);
+        onLoad();
+      })
+      .catch((error) => toast.warning(error.response.data.Errors));
+    
   };
 
   return (
@@ -41,16 +33,16 @@ const OutStock = (props) => {
       <div className="text-center">
         <img
           src={icon}
-          class="rounded mx-auto d-block"
+          className="rounded mx-auto d-block"
           alt="..."
           style={{ width: 200, height: 200 }}
         />
-        <p>Quản lý tồn kho - Số lượng một vài sản phẩm đã không đủ</p>
+        <p>Tồn kho - Số lượng một vài sản phẩm đã không đủ</p>
       </div>
       <div className="container-fluid padding mb-1">
         <div className="row welcome mb-5 mt-5">
           <div className="row col-10 offset-1 text mb-2">
-            <button className="btn btn-primary" onClick={modifyCartItemHandler}>
+            <button className="btn btn-primary" onClick={reloadCartItemHandler}>
               Cập nhật <i className="fa fa-refresh" />
             </button>
           </div>

@@ -27,12 +27,13 @@ const ProductDetail = () => {
     setFlag(flag);
   };
 
-  const onAddCartHandler = async (accountId, attributeId) => {
+  const onAddCartHandler = async (accountId, attributeId, lastPrice) => {
     if (flag) {
       const data = {
         accountId: accountId,
         attributeId: attributeId,
         quantity: 1,
+        lastPrice: lastPrice
       };
       try {
         await modifyCartItem(data);
@@ -68,8 +69,11 @@ const ProductDetail = () => {
                     <p className="card-text fw-bold fs-5">Mã SP: {item.code}</p>
                     <hr />
                     <h4 className="card-text fw-bolder text-danger fs-5">
-                      Giá: {price && price.toLocaleString() + " đ"}
+                      Giá bán: {price && (price * (100 - item.discount)/100).toLocaleString() + " đ"}
                     </h4>
+                    <h6 className="card-text fw-bolder fs-5">
+                      Giá gốc: <del>{price && price.toLocaleString() + " đ"}</del>
+                    </h6>
                     <h6 className="card-text fw-bolder fs-5" hidden>
                       Sản phẩm còn: {stock && stock + " đôi"}
                     </h6>
@@ -96,7 +100,7 @@ const ProductDetail = () => {
                     </div>
                     <hr />
                     <button
-                      onClick={() => onAddCartHandler(1, flag)}
+                      onClick={() => onAddCartHandler(1, flag, price * (100 - item.discount)/100)}
                       className="btn btn-primary text-white"
                     >
                       Thêm vào giỏ
