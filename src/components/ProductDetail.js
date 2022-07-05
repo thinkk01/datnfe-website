@@ -48,7 +48,7 @@ const ProductDetail = () => {
   return (
     <div>
       {item && (
-        <div className="col-10 offset-1 mt-5">
+        <div className="col-12 mt-5">
           <div>
             <div className="card mb-3 border-0">
               <div className="row g-0">
@@ -100,12 +100,12 @@ const ProductDetail = () => {
                     </div>
                     <hr />
                     <button
-                      onClick={() => onAddCartHandler(1, flag, price * (100 - item.discount)/100)}
+                      onClick={() => onAddCartHandler(2, flag, price * (100 - item.discount)/100)}
                       className="btn btn-primary text-white"
                     >
                       Thêm vào giỏ
                     </button>
-                    <NavLink to="/cart" className="btn btn-secondary ml-2">
+                    <NavLink to="/cart" className="btn btn-primary ml-2">
                       Đi đến giỏ hàng
                     </NavLink>
                   </div>

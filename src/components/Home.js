@@ -96,13 +96,7 @@ const Home = () => {
                         <i className="fa fa-star" aria-hidden="true"></i>
                         <span className="ml-1">New</span>
                       </span>
-                    </div>
-                    <div className="label-sale">
-                      <span className="text-white bg-primary small d-flex align-items-center px-2 py-1">
-                        <i className="fa fa-tag" aria-hidden="true"></i>
-                        <span className="ml-1">Sale</span>
-                      </span>
-                    </div>
+                    </div>                   
                   </div>
                   <NavLink to={`/product-detail/${item.id}`}>
                     <img
@@ -186,7 +180,7 @@ const Home = () => {
         </div>
       </div>
       <nav aria-label="Page navigation example">
-        <ul className="pagination offset-5">
+        <ul className="pagination offset-5 mt-3">
           <li className={page === 1 ? "page-item disabled" : "page-item"}>
             <button className="page-link" onClick={() => onChangePage(1)}>
               First

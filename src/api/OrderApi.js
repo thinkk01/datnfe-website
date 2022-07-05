@@ -5,8 +5,8 @@ export const createOrder = (data) =>{
     return Instance.post(url, data);
 }
 
-export const getAllOrder = (id) =>{
-    const url = `api/site/get-orders?id=${id}`;
+export const getAllOrder = (id, status) =>{
+    const url = `api/site/get-orders?id=${id}&status=${status}`;
     return Instance.get(url);
 }
 

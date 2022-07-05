@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { createOrder } from "../api/OrderApi";
 import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
-import {getVoucherByCode} from '../api/VoucherApi'
+import { getVoucherByCode } from "../api/VoucherApi";
 
 const Checkout = (props) => {
   const [amount, setAmount] = useState();
@@ -13,8 +13,9 @@ const Checkout = (props) => {
   const [info, setInfo] = useState();
   const [district, setDistrict] = useState();
   const [ward, setWard] = useState();
-  const [voucher, setVoucher] = useState('');
+  const [voucher, setVoucher] = useState("");
   const [flag, setFlag] = useState(false);
+  const [sub, setSub] = useState();
 
   const history = useHistory();
 
@@ -30,39 +31,46 @@ const Checkout = (props) => {
 
   const onLoad = () => {
     getAllProvince().then((resp) => setInfo(resp.data));
-    getCartItemByAccountId(1).then((resp) => {
-      setCart(resp.data);
-      const result = resp.data.reduce(
-        (price, item) => price + (item.price * item.quantity * (100 - item.discount)) / 100,
-        0
-      );
+    getCartItemByAccountId(2).then((resp) => {
+      setCart(resp.data.filter((item) => props.buy.includes(item.id + "")));
+      const result = resp.data
+        .filter((item) => props.buy.includes(item.id + ""))
+        .reduce(
+          (price, item) =>
+            price + (item.price * item.quantity * (100 - item.discount)) / 100,
+          0
+        );
       setAmount(result);
     });
   };
 
-  const voucherHandler = (value) =>{
+  const voucherHandler = (value) => {
     setVoucher(value);
-  }
+  };
 
-  const useVoucherHandler = () =>{
-    if(flag){
+  const useVoucherHandler = () => {
+    if (flag) {
       toast.warning("Voucher đã được áp dụng.");
-    }else{
+    } else {
       getVoucherByCode(voucher)
-    .then((resp) => {
-      setAmount((prevState) => prevState * (100 - resp.data.discount)/100);
-      setFlag(true);
-      toast.success("Áp dụng voucher thành công.");
-    })
-    .catch((error) => toast.error(error.response.data.Errors))
+        .then((resp) => {
+          setAmount(
+            (prevState) => (prevState * (100 - resp.data.discount)) / 100
+          );
+          setFlag(true);
+          toast.success("Áp dụng voucher thành công.");
+          setSub((amount * (resp.data.discount)) / 100);
+        })
+        .catch((error) => toast.error(error.response.data.Errors));
     }
-  }
+  };
 
-  const refreshVoucherHandler = () =>{
+  const refreshVoucherHandler = () => {
     setFlag(false);
-    setVoucher('');
+    setVoucher("");
+    setSub("");
     onLoad();
-  }
+  };
   const onLoadDistrictHandler = (id) => {
     const resp = info.filter((item) => item.name === id);
     setDistrict(resp[0].districts);
@@ -82,32 +90,31 @@ const Checkout = (props) => {
       total: amount,
       note: data.note,
       isPending: data.payment,
-      accountId: 1,
+      accountId: 2,
       code: voucher,
       orderDetails: cart.map((item) => ({
         quantity: item.quantity,
         originPrice: item.price,
-        sellPrice: item.price * (100 - item.discount)/100,
+        sellPrice: (item.price * (100 - item.discount)) / 100,
         attribute: {
-          id: item.id,
+          id: item.id
         },
       })),
     };
     try {
-      await createOrder(order)
-      .then(() => {
-        history.push('/order')
+      await createOrder(order).then((resp) => {
+        history.push(`/order/detail/${resp.data.id}`);
       });
     } catch (error) {
-      history.push('/out-of-stock');
+      history.push("/out-of-stock");
     }
   };
   return (
-    <div className=" pb-3">
+    <div className="pb-3 container-fluid">
       <div className="py-3 col-10 offset-1 text-center">
         <h2 className="text-danger">Thông tin mua hàng</h2>
       </div>
-      <div className="row col-10 offset-1 g-5">
+      <div className="row">
         <div className="col-md-5 col-lg-4 order-md-last">
           <h4 className="d-flex justify-content-between align-items-center mb-3">
             <span className="text-dark">Giỏ hàng của bạn</span>
@@ -124,27 +131,54 @@ const Checkout = (props) => {
                     <h6 className="my-0">
                       {item.name} - {item.size}
                     </h6>
-                    <small className="text-muted">{`${item.price.toLocaleString()} x ${
-                      item.quantity
-                    }`}</small>
+                    <small className="text-muted">
+                      {(
+                        (item.price * (100 - item.discount)) /
+                        100
+                      ).toLocaleString()}{" "}
+                      x {item.quantity}
+                    </small>
                   </div>
                   <strong>
-                    {(item.price * item.quantity).toLocaleString()}
+                    {(
+                      ((item.price * (100 - item.discount)) / 100) *
+                      item.quantity
+                    ).toLocaleString()}
                   </strong>
                 </li>
               ))}
             <li className="list-group-item d-flex justify-content-between bg-light">
               <div className="text-success">
                 <h6 className="my-2">Mã giảm giá</h6>
-                <input className="form-control my-2" value={voucher} disabled={flag} type="text" onChange={(e) => voucherHandler(e.target.value)}/>
-                <button type="button" className="btn btn-primary mr-3" onClick={useVoucherHandler}>
+                <input
+                  className="form-control my-2"
+                  value={voucher}
+                  disabled={flag}
+                  type="text"
+                  onChange={(e) => voucherHandler(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary mr-3"
+                  onClick={useVoucherHandler}
+                >
                   Áp dụng
                 </button>
-                <button type="button" className="btn btn-primary" onClick={refreshVoucherHandler}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={refreshVoucherHandler}
+                >
                   Làm mới
                 </button>
               </div>
             </li>
+            {sub && (
+              <li className="list-group-item d-flex justify-content-between">
+                <span>Giá giảm (VND)</span>
+                <strong>- {sub.toLocaleString()}</strong>
+              </li>
+            )}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng tiền (VND)</span>
               <strong>{amount && amount.toLocaleString()}</strong>
@@ -343,8 +377,9 @@ const Checkout = (props) => {
               </label>
             </div>
             <button
-              className="w-100 btn btn-primary btn-lg mt-5  mb-5"
+              className="btn btn-primary btn-lg mt-5 mb-5"
               type="submit"
+              style={{marginLeft: 680}}
             >
               Đặt hàng
             </button>

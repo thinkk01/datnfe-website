@@ -7,13 +7,19 @@ const OrderDetail = () => {
   const [order, setOrder] = useState({});
   const { id } = useParams();
   const [amount, setAmount] = useState();
+  const [sale, setSale] = useState();
+  const [total, setTotal] = useState();
 
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getOrderById(id).then((resp) => setOrder(resp.data));
+    getOrderById(id).then((resp) => {
+      setOrder(resp.data);
+      setSale(resp.data.voucher.discount);
+      setTotal(resp.data.total);
+    });
     getOrderDetailByOrderId(id).then((resp) => {
       setOrderDetail(resp.data);
       const result = resp.data.reduce(
@@ -33,7 +39,7 @@ const OrderDetail = () => {
           </p>
         </div>
         <div className="col-10 offset-1 mb-5">
-          <table className="table">
+          <table className="table table-striped table-bordered">
             <thead>
               <tr>
                 <th scope="col">Mã sản phẩm</th>
@@ -47,21 +53,22 @@ const OrderDetail = () => {
               {orderDetail &&
                 orderDetail.map((item, index) => (
                   <tr key={index}>
-                    <th scope="row">
-                      {item.attribute.id}
-                    </th>
+                    <th scope="row">{item.attribute.id}</th>
                     <td>{item.attribute.size}</td>
                     <td>{item.sellPrice.toLocaleString()}₫</td>
                     <td>{item.quantity}</td>
-                    <td>{(item.sellPrice * item.quantity).toLocaleString()}₫</td>
+                    <td>
+                      {(item.sellPrice * item.quantity).toLocaleString()}₫
+                    </td>
                   </tr>
                 ))}
             </tbody>
           </table>
           <div className="row mb-5">
-            <hr className="my-4" />
-            <div className="col-sm-8">
-              <h3 className="card-title bolder">Tổng tiền: {amount && amount.toLocaleString()} ₫</h3>
+            <div className="col offset-8 text ">
+              <p>Tạm tính: {amount && amount.toLocaleString()} đ</p>
+              <p>Giảm giá: - {sale ? (amount * sale / 100).toLocaleString() : 0} đ</p>
+              <p className="text-danger">Tổng cộng: {total && total.toLocaleString()} đ</p>
             </div>
           </div>
         </div>

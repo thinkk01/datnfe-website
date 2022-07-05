@@ -27,9 +27,9 @@ const Product = () => {
   };
   return (
     <div>
-      <div className="container mt-5">
+      <div className="mt-5">
         <div className="row">
-          <div className="col-3">
+          <div className="col-2">
             <div className="col">
               <h4 className="text-danger fw-bolder">Sản phẩm</h4>
               <ul class="list-group">
@@ -68,13 +68,7 @@ const Product = () => {
                             <i className="fa fa-star" aria-hidden="true"></i>
                             <span className="ml-1">New</span>
                           </span>
-                        </div>
-                        <div className="label-sale">
-                          <span className="text-white bg-primary small d-flex align-items-center px-2 py-1">
-                            <i className="fa fa-tag" aria-hidden="true"></i>
-                            <span className="ml-1">Sale</span>
-                          </span>
-                        </div>
+                        </div>                        
                       </div>
                       <NavLink to={`/product-detail/${item.id}`}>
                         <img

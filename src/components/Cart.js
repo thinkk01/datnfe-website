@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   getCartItemByAccountId,
   modifyCartItem,
   removeCartItem,
   isEnoughCartItem,
 } from "../api/CartApi";
-import { cacheAttribute } from "../api/AttributeApi";
 import { toast } from "react-toastify";
 
 const Cart = (props) => {
@@ -20,8 +19,8 @@ const Cart = (props) => {
   }, []);
 
   const onLoad = () => {
-    getCartItemByAccountId(1).then((resp) => {
-      setCart(resp.data);
+    getCartItemByAccountId(2).then((resp) => {
+      setCart(resp.data.map((item) => ({ ...item, checked: false })));
       props.outStockHandler(resp.data);
       const result = resp.data.reduce(
         (price, item) =>
@@ -30,11 +29,12 @@ const Cart = (props) => {
       );
       setAmount(result);
     });
+    props.clearBuyHandler();
   };
 
   const modifyCartItemHandler = async (attr, quantity) => {
     const data = {
-      accountId: 1,
+      accountId: 2,
       attributeId: attr,
       quantity: quantity,
     };
@@ -47,7 +47,7 @@ const Cart = (props) => {
 
   const removeCartItemHandler = async (attr, quantity) => {
     const data = {
-      accountId: 1,
+      accountId: 2,
       attributeId: attr,
       quantity: quantity,
     };
@@ -59,25 +59,52 @@ const Cart = (props) => {
   };
 
   const checkOutHandler = () => {
-    for (let i = 0; i < cart.length; i++) {
-      isEnoughCartItem(cart[i].id, cart[i].quantity)
-        .then()
-        .catch(() => history.push("/out-of-stock"));
+    if (props.buy.length === 0) {
+      toast.warning("Bạn vẫn chưa chọn sản phẩm nào để mua.");
+    } else {
+      for (let j = 0; j < props.buy.length; j++) {
+        for (let i = 0; i < cart.length; i++) {
+          if (props.buy[j] === cart[i].id) {
+            isEnoughCartItem(cart[i].id, cart[i].quantity)
+              .then()
+              .catch(() => history.push("/out-of-stock"));
+          }
+        }
+      }
+      history.push("/checkout");
     }
-    history.push("/checkout");
+  };
+
+  const buyHandler = (e) => {   
+    const id = e.target.value;
+    const index = cart.findIndex((item) => item.id == id);
+   const flag = cart[index].checked;
+   if(flag){
+    cart[index] = {
+      ...cart[index],
+      checked: false
+    }
+    props.cancelBuyHandler(id);
+   }else{
+    cart[index] = {
+      ...cart[index],
+      checked: true
+    }
+    props.buyHandler(id);
+   }
   };
 
   return (
-    <div>
-      <div className="container-fluid padding mb-5">
-        <div className="row welcome mb-5 mt-5">
-          <div className="row col-10 offset-1 text ">
+    <div className="col-12">
+       <div className="container-fluid mb-5 mt-5">
+          <div>
             <h4 className="text-danger">Giỏ hàng của bạn</h4>
           </div>
-          <div className="row col-10 offset-1 mb-5">
-            <table className="table">
+          <div className="">
+            <table className="table table-striped table-bordered">
               <thead>
                 <tr>
+                  <th scope="col">Chọn</th>
                   <th scope="col">Ảnh</th>
                   <th scope="col">Tên</th>
                   <th scope="col">Size</th>
@@ -91,7 +118,16 @@ const Cart = (props) => {
                 {cart &&
                   cart.map((item, index) => (
                     <tr key={index}>
-                      <th scope="row">
+                      <th>
+                        <input
+                          className="form-check-input ml-3 mt-5"
+                          type="checkbox"
+                          value={item.id}
+                          id="defaultCheck1"
+                          onClick={buyHandler}
+                        />
+                      </th>
+                      <th>
                         <img
                           className="img-fluid"
                           style={{ width: "100px", height: "100px" }}
@@ -106,8 +142,28 @@ const Cart = (props) => {
                         <h6 className="card-title mt-5 bolder">{item.size}</h6>
                       </td>
                       <td>
-                        {item.lastPrice > item.price * (100 - item.discount)/100 && <h6 className="text-danger">Giá đã giảm {(item.lastPrice -item.price * (100 - item.discount)/100).toLocaleString()} đ</h6>}
-                        {item.lastPrice < item.price * (100 - item.discount)/100 && <h6 className="text-danger">Giá đã tăng {(item.price * (100 - item.discount)/100 - item.lastPrice).toLocaleString()} đ</h6>}
+                        {item.lastPrice >
+                          (item.price * (100 - item.discount)) / 100 && (
+                          <h6 className="text-danger">
+                            Giá đã giảm{" "}
+                            {(
+                              item.lastPrice -
+                              (item.price * (100 - item.discount)) / 100
+                            ).toLocaleString()}{" "}
+                            đ
+                          </h6>
+                        )}
+                        {item.lastPrice <
+                          (item.price * (100 - item.discount)) / 100 && (
+                          <h6 className="text-danger">
+                            Giá đã tăng{" "}
+                            {(
+                              (item.price * (100 - item.discount)) / 100 -
+                              item.lastPrice
+                            ).toLocaleString()}{" "}
+                            đ
+                          </h6>
+                        )}
                         <h6 className="card-title mt-5 bolder">
                           {(
                             (item.price * (100 - item.discount)) /
@@ -155,9 +211,9 @@ const Cart = (props) => {
                         </h6>
                       </td>
                       <td>
-                        <button
-                          className="border-0 rounded-circle"
-                          style={{ backgroundColor: "white" }}
+                        <Link
+                          className="border-0 pl-4"
+                          // style={{ backgroundColor: "white" }}
                           onClick={() =>
                             removeCartItemHandler(item.id, item.quantity)
                           }
@@ -166,38 +222,27 @@ const Cart = (props) => {
                             className="fa fa-trash-o mt-5 text-danger"
                             style={{ fontSize: "24px" }}
                           />
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   ))}
               </tbody>
             </table>
             <hr className="my-4" />
-            <div className="row container-fluid ml-5">
-              <NavLink
-                to="/"
-                className="btn btn-primary mb-3 btn-lg mr-3"
-                exact
-              >
-                Tiếp tục mua hàng
-              </NavLink>
+            <div className="row container-fluid">
               <button
-                // to="/checkout"
                 className="btn btn-primary mb-3 btn-lg"
-                disabled={cart.length === 0 ? "disabled" : ""}
                 onClick={checkOutHandler}
-                // exact
               >
-                Tiến hành thanh toán
+                Mua hàng
               </button>
-              <div className="row ml-5">
+              <div className="row ml-5" style={{ paddingLeft: 700 }}>
                 <h4 className="mr-5">Tổng tiền: </h4>
                 <h4>{amount?.toLocaleString()}₫</h4>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

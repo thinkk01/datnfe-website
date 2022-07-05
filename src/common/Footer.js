@@ -27,7 +27,7 @@ const Footer = () => {
           </div>
         </div>
         <footer>
-          <div className="container-fluid padding bg-dark text-white">
+          <div className="container-fluid padding bg-light text-dark">
             <div className="row text-center">
               <div className="col-md-4">
                 <hr className="light" />

@@ -1,37 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { getAllOrder } from "../api/OrderApi";
+import { getAllOrderStatus } from "../api/OrderStatusApi";
+
 const Order = () => {
   const [order, setOrder] = useState([]);
+  const [orderStatus, setOrderStatus] = useState([]);
+  const [status, setStatus] = useState(0);
 
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getAllOrder(1)
+    getAllOrder(2, status)
+      .then((res) => setOrder(res.data))
+      .catch((error) => console.log(error.response.data.Errors));
+
+    getAllOrderStatus()
+      .then((resp) => setOrderStatus(resp.data))
+      .catch((error) => console.log(error.response.data.Errors));
+  };
+
+  const getAllOrderByStatus = (value) => {
+    setStatus(value);
+    getAllOrder(2, value)
       .then((res) => setOrder(res.data))
       .catch((error) => console.log(error.response.data.Errors));
   };
   return (
     <div>
-      <div className="container-fluid padding mb-5">
-        <div className="row welcome mb-5 mt-2">
+      <div className="col-12">
+        <div className="container-fluid welcome mb-5 mt-2">
           <div className="col-10 offset-1 text ">
-            <p className="text-danger" style={{ fontSize: "34px" }}>
+            <p className="text-danger text-center" style={{ fontSize: "34px" }}>
               Đơn hàng của bạn
             </p>
           </div>
-          <div className="row col-10 offset-1 mb-5">
-            <table className="table">
+          <div className="row col-12 mb-5">
+            <div className="mb-3 mt-3">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="inlineRadioOptions"
+                  value="0"
+                  onChange={(event) => getAllOrderByStatus(event.target.value)}
+                  checked={status == 0}
+                />
+                <label className="form-check-label">Tất cả</label>
+              </div>
+              {orderStatus &&
+                orderStatus.map((item, index) => (
+                  <div className="form-check form-check-inline" key={index}>
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptions"
+                      value={item.id}
+                      onChange={(event) =>
+                        getAllOrderByStatus(event.target.value)
+                      }
+                      checked={status == item.id}
+                    />
+                    <label className="form-check-label" htmlFor="inlineRadio2">
+                      {item.name}
+                    </label>
+                  </div>
+                ))}
+            </div>
+            <table className="table table-striped table-bordered">
               <thead>
                 <tr>
                   <th scope="col">Đơn hàng</th>
                   <th scope="col">Ngày tạo</th>
                   <th scope="col">Tình trạng thanh toán</th>
                   <th scope="col">Tình trạng vận chuyển</th>
-                  <th scope="col">Voucher</th>
                   <th scope="col">Tổng tiền</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
@@ -39,48 +85,60 @@ const Order = () => {
                   order.map((item, index) => (
                     <tr key={index}>
                       <th scope="row">
-                        <h5 className="card-title mt-2 bolder">
+                        <h6 className="card-title mt-2 bolder">
                           <NavLink to={`/order/detail/${item.id}`} exact>
                             #{item.id}
                           </NavLink>
-                        </h5>
+                        </h6>
                       </th>
                       <td>
-                        <h5 className="card-title mt-2 bolder">
+                        <h6 className="card-title mt-2 bolder">
                           {item.modifyDate}
-                        </h5>
+                        </h6>
                       </td>
                       <td>
                         {item.isPending ? (
-                          <h5 className="card-title mt-2 bolder text-primary">
+                          <h6 className="card-title mt-2 bolder text-primary">
                             Đã thanh toán
-                          </h5>
+                          </h6>
                         ) : (
-                          <h5 className="card-title mt-2 bolder text-danger">
+                          <h6 className="card-title mt-2 bolder text-danger">
                             Chưa thanh toán
-                          </h5>
+                          </h6>
                         )}
                       </td>
                       <td>
-                        <h5 className="card-title mt-2 bolder">
+                        <h6 className="card-title mt-2 bolder">
                           {item.orderStatus.name}
-                        </h5>
+                        </h6>
                       </td>
-                        <td>
-                        <h5 className="card-title mt-2 bolder">
-                          {item.voucher && item.voucher.discount} 
-                          {!item.voucher && 0} %
-                        </h5>
-                        </td>
                       <td>
-                        <h5 className="card-title mt-2 bolder">
+                        <h6 className="card-title mt-2 bolder">
                           {item.total.toLocaleString()} ₫
-                        </h5>
+                        </h6>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-danger">
+                          Hủy đơn
+                        </button>
                       </td>
                     </tr>
                   ))}
               </tbody>
             </table>
+            <nav aria-label="navigation">
+              <ul className="pagination">
+                <li className="page-item disabled">
+                  <button className="page-link">First</button>
+                </li>
+                <li className="page-item active">
+                  <button className="page-link">1</button>
+                </li>
+                <li className="page-item disabled">
+                  <button className="page-link">Last</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
