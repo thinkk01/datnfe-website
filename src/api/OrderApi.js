@@ -10,6 +10,11 @@ export const getAllOrder = (id, status) =>{
     return Instance.get(url);
 }
 
+export const getAllOrderAndPagination = (page, size) =>{
+    const url = `api/site/get-orders-and-pagination?page=${page}&size=${size}`;
+    return Instance.get(url);
+}
+
 export const getOrderById = (id) =>{
     const url = `api/site/get-order-by-id?id=${id}`;
     return Instance.get(url);
@@ -19,3 +24,9 @@ export const getOrderDetailByOrderId = (id) =>{
     const url = `api/site/get-order-detail-by-id?id=${id}`;
     return Instance.get(url);
 }
+
+export const updateOrderWithStatus = (orderId, statusId) =>{
+    const url = `api/site/update-order-with-status?id=${orderId}&status=${statusId}`;
+    return Instance.get(url);
+}
+
