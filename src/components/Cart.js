@@ -64,9 +64,9 @@ const Cart = (props) => {
     } else {
       for (let j = 0; j < props.buy.length; j++) {
         for (let i = 0; i < cart.length; i++) {
-          if (props.buy[j] === cart[i].id) {
+          if (props.buy[j] == cart[i].id) {
             isEnoughCartItem(cart[i].id, cart[i].quantity)
-              .then()
+              .then((resp) => console.log(resp.data))
               .catch(() => history.push("/out-of-stock"));
           }
         }

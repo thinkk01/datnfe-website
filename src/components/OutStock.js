@@ -13,13 +13,13 @@ const OutStock = (props) => {
   }, []);
 
   const onLoad = () => {
-    getCartItemByAccountId(1).then((resp) => {
+    getCartItemByAccountId(2).then((resp) => {
       setCart(resp.data);
     });
   };
 
   const reloadCartItemHandler = () => {
-    reloadCartItem(1)
+    reloadCartItem(2)
       .then((resp) => {
         toast.success(resp.data);
         onLoad();
@@ -40,13 +40,13 @@ const OutStock = (props) => {
         <p>Tồn kho - Số lượng một vài sản phẩm đã không đủ</p>
       </div>
       <div className="container-fluid padding mb-1">
-        <div className="row welcome mb-5 mt-5">
+        <div className="col-12 mb-5 mt-5">
           <div className="row col-10 offset-1 text mb-2">
             <button className="btn btn-primary" onClick={reloadCartItemHandler}>
               Cập nhật <i className="fa fa-refresh" />
             </button>
           </div>
-          <div className="row col-10 offset-1 mb-1">
+          <div className="row col-12 mb-1">
             <table className="table">
               <thead>
                 <tr>

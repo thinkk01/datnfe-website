@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   getAllOrderAndPagination,
   updateOrderWithStatus,
@@ -9,6 +9,7 @@ import Badge from "../badge/Badge";
 import { toast } from "react-toastify";
 import { Button, Form } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
+import { getAllOrderStatus } from "../../api/OrderStatusApi";
 
 const orderStatus = {
   "Đang xử lí": "primary",
@@ -21,32 +22,84 @@ const Order = () => {
   const [orders, setOrders] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = (orderId, statusId) => {
+    setShow(true);
+    setObj({
+      orderId: orderId,
+      statusId: statusId,
+    });
+  };
+  const [status, setStatus] = useState(0);
+  const [orderStatuses, setOrderStatuses] = useState([]);
+  const [obj, setObj] = useState({});
 
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getAllOrderAndPagination(1, 8)
+    getAllOrderAndPagination(0, 1, 8)
       .then((res) => setOrders(res.data))
       .catch((error) => console.log(error));
+    getAllOrderStatus()
+      .then((resp) => setOrderStatuses(resp.data))
+      .catch((error) => console.log(error.response.data.Errors));
   };
 
   const updateStatusHandler = (orderId, statusId) => {
-    handleShow();
-    updateOrderWithStatus(orderId, statusId)
+    handleShow(orderId, statusId);
+  };
+
+  const confirmUpdateHandler = () => {
+    updateOrderWithStatus(obj.orderId, obj.statusId)
       .then(() => {
         onLoad();
         toast.success("Cập nhật thành công.");
       })
       .catch((error) => toast.warning(error.response.data.Errors));
+    setShow(false);
+  };
+
+  const getAllOrderByStatus = (value) => {
+    setStatus(value);
+    getAllOrderAndPagination(value, 1, 8)
+      .then((res) => setOrders(res.data))
+      .catch((error) => console.log(error.response.data.Errors));
   };
   return (
     <div className="col-12">
       <div className="card">
         <div className="card__header">
           <h3>Đơn hàng</h3>
+        </div>
+        <div className="mb-3 mt-3">
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              value="0"
+              onChange={(event) => getAllOrderByStatus(event.target.value)}
+              checked={status == 0}
+            />
+            <label className="form-check-label">Tất cả</label>
+          </div>
+          {orderStatuses &&
+            orderStatuses.map((item, index) => (
+              <div className="form-check form-check-inline" key={index}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="inlineRadioOptions"
+                  value={item.id}
+                  onChange={(event) => getAllOrderByStatus(event.target.value)}
+                  checked={status == item.id}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio2">
+                  {item.name}
+                </label>
+              </div>
+            ))}
         </div>
         <div className="card__body">
           {orders && (
@@ -90,7 +143,11 @@ const Order = () => {
                     {orders &&
                       orders.map((item, index) => (
                         <tr key={index}>
-                          <th scope="row">OD{item.id}</th>
+                          <th scope="row">
+                            <NavLink to={`/order-detail/${item.id}`} exact>
+                              #OD{item.id}
+                            </NavLink>{" "}
+                          </th>
                           <th>{item.modifyDate}</th>
                           <th>
                             {item.isPending
@@ -165,29 +222,28 @@ const Order = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="table__pagination">
-                <div className="table__pagination-item">First</div>
-                <div className="table__pagination-item active">1</div>
-                <div className="table__pagination-item">Last</div>
-              </div>
             </div>
           )}
         </div>
         <div className="card__footer">
-          <Link to="/">view all</Link>
+          <div className="table__pagination">
+            <div className="table__pagination-item">First</div>
+            <div className="table__pagination-item active">1</div>
+            <div className="table__pagination-item">Last</div>
+          </div>
         </div>
       </div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Hướng dẫn chọn size</Modal.Title>
+          <Modal.Title>Xác nhận cập nhật?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Xác nhận cập nhật?</Form.Label>
-            </Form.Group>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
+              <Button variant="danger" onClick={confirmUpdateHandler}>
+                Xác nhận
+              </Button>
+              <Button variant="primary" onClick={handleClose}>
                 Đóng
               </Button>
             </Modal.Footer>

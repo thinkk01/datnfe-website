@@ -72,7 +72,7 @@ const UserLayOut = () => {
             ></Cart>
           </Route>
           <Route path="/checkout" exact>
-            <Checkout temp={temp} buy={buy}></Checkout>
+            <Checkout temp={temp} buy={buy} outStockHandler={outStockHandler}></Checkout>
           </Route>
           <Route path="/order" exact>
             <Order></Order>
@@ -81,7 +81,7 @@ const UserLayOut = () => {
             <OrderDetail></OrderDetail>
           </Route>
           <Route path="/out-of-stock" exact>
-            <OutStock outStock={outStock} setOutStock={setOutStock}></OutStock>
+            <OutStock outStock={outStock} buy={buy}></OutStock>
           </Route>
         </Switch>
         <Footer></Footer>

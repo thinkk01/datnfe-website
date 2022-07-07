@@ -10,8 +10,8 @@ export const getAllOrder = (id, status) =>{
     return Instance.get(url);
 }
 
-export const getAllOrderAndPagination = (page, size) =>{
-    const url = `api/site/get-orders-and-pagination?page=${page}&size=${size}`;
+export const getAllOrderAndPagination = (status, page, size) =>{
+    const url = `api/site/get-orders-and-pagination?page=${page}&size=${size}&status=${status}`;
     return Instance.get(url);
 }
 
