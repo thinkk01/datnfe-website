@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllProducts, getTotalPage } from "../api/ProductApi";
 import { NavLink } from "react-router-dom";
-const Product = () => {
+const Product = (props) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState({});
@@ -20,6 +20,7 @@ const Product = () => {
   useEffect(() => {
     getAllProducts(page, 9).then((response) => setProducts(response.data));
     getTotalPage().then((res) => setTotal(res.data));
+    props.changeHeaderHandler(2);
   }, [page]);
 
   const onChangePage = (page) => {
@@ -30,29 +31,29 @@ const Product = () => {
       <div className="mt-5">
         <div className="row">
           <div className="col-2">
-            <div className="col">
+            <div className="col mini-card">
               <h4 className="text-danger fw-bolder">Sản phẩm</h4>
-              <ul class="list-group">
+              <ul className="list-group">
                 <li class="list-group-item active" aria-current="true">
-                  An active item
+                  Giày nam
                 </li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
+                <li className="list-group-item">Giày nữ</li>
+                <li className="list-group-item">Giày chạy bộ</li>
+                <li className="list-group-item">Giày bóng rổ</li>
+                <li className="list-group-item">Giày bóng đá</li>
               </ul>
             </div>
 
-            <div className="col mt-3">
+            <div className="col mt-3 mini-card">
               <h4 className="text-danger fw-bolder">Giá</h4>
-              <ul class="list-group">
-                <li class="list-group-item active" aria-current="true">
-                  An active item
+              <ul className="list-group">
+                <li className="list-group-item active" aria-current="true">
+                 Dưới 1 triệu
                 </li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
+                <li className="list-group-item">1.000.000 - 2.000.000 đ</li>
+                <li className="list-group-item">2.000.000 - 3.000.000 đ</li>
+                <li className="list-group-item">3.000.000 - 4.000.000 đ</li>
+                <li className="list-group-item">Trên 4 triệu</li>
               </ul>
             </div>
           </div>

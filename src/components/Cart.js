@@ -30,6 +30,7 @@ const Cart = (props) => {
       setAmount(result);
     });
     props.clearBuyHandler();
+    props.changeHeaderHandler(3);
   };
 
   const modifyCartItemHandler = async (attr, quantity) => {
@@ -97,7 +98,7 @@ const Cart = (props) => {
   return (
     <div className="col-12">
        <div className="container-fluid mb-5 mt-5">
-          <div>
+          <div className="mini-card">
             <h4 className="text-danger">Giỏ hàng của bạn</h4>
           </div>
           <div className="">

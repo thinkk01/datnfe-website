@@ -6,6 +6,8 @@ import { createOrder } from "../api/OrderApi";
 import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
 import { getVoucherByCode } from "../api/VoucherApi";
+import {getPaypalPayment} from '../api/PaymenApi'
+import {getAccountDetailByAccountId} from '../api/AccountApi'
 
 const Checkout = (props) => {
   const [amount, setAmount] = useState();
@@ -16,7 +18,7 @@ const Checkout = (props) => {
   const [voucher, setVoucher] = useState("");
   const [flag, setFlag] = useState(false);
   const [sub, setSub] = useState();
-
+  const [payment, setPayment] = useState(false);
   const history = useHistory();
 
   const {
@@ -42,6 +44,7 @@ const Checkout = (props) => {
         );
       setAmount(result);
     });
+    props.changeHeaderHandler(3);
   };
 
   const voucherHandler = (value) => {
@@ -59,7 +62,7 @@ const Checkout = (props) => {
           );
           setFlag(true);
           toast.success("Áp dụng voucher thành công.");
-          setSub((amount * (resp.data.discount)) / 100);
+          setSub((amount * resp.data.discount) / 100);
         })
         .catch((error) => toast.error(error.response.data.Errors));
     }
@@ -97,18 +100,32 @@ const Checkout = (props) => {
         originPrice: item.price,
         sellPrice: (item.price * (100 - item.discount)) / 100,
         attribute: {
-          id: item.id
+          id: item.id,
         },
       })),
     };
-    try {
-      await createOrder(order).then((resp) => {
-        history.push(`/order/detail/${resp.data.id}`);
-      });
-    } catch (error) {
-      history.push("/out-of-stock");
+    if(payment){
+      // console.log(order)
+      // getPaypalPayment(order)
+      // .then((res) => history.push(res.data))
+      // .catch((error) => history.push('/error-page'))
+      history.push('/payment-page');
+      console.log(order);
+    }else{
+      try {
+        await createOrder(order).then((resp) => {
+          toast.success("Đặt hàng thành công");
+          history.push(`/order/detail/${resp.data.id}`);
+        });
+      } catch (error) {
+        history.push("/out-of-stock");
+      }
     }
   };
+  
+  const changePaymentHandler = (value) =>{
+    setPayment(value);
+  }
   return (
     <div className="pb-3 container-fluid">
       <div className="py-3 col-10 offset-1 text-center">
@@ -201,7 +218,7 @@ const Checkout = (props) => {
             <div className="row g-3">
               <div className="col-sm-6">
                 <label htmlFor="firstName" className="form-label">
-                  Tỉnh Thành
+                  <strong>Tỉnh Thành</strong>
                 </label>
                 <select
                   className="form-control"
@@ -220,7 +237,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-sm-6">
                 <label htmlFor="lastName" className="form-label">
-                  Quận Huyện
+                  <strong>Quận Huyện</strong>
                 </label>
                 <select
                   className="form-control"
@@ -239,7 +256,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-sm-6 mt-2">
                 <label htmlFor="lastName" className="form-label">
-                  Phường Xã
+                  <strong>Phường Xã</strong>
                 </label>
                 <select
                   className="form-control"
@@ -257,7 +274,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-12 mt-2">
                 <label htmlFor="address" className="form-label">
-                  Địa chỉ
+                  <strong>Địa chỉ</strong>
                 </label>
                 <textarea
                   className="form-control"
@@ -278,7 +295,7 @@ const Checkout = (props) => {
 
               <div className="col-sm-6 mt-2">
                 <label htmlFor="lastName" className="form-label">
-                  Họ tên
+                  <strong> Họ tên</strong>
                 </label>
                 <input
                   type="text"
@@ -297,7 +314,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-sm-6 mt-2">
                 <label htmlFor="lastName" className="form-label">
-                  Số điện thoại
+                  <strong>Số điện thoại</strong>
                 </label>
                 <input
                   type="text"
@@ -316,7 +333,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-sm-6 mt-2">
                 <label htmlFor="lastName" className="form-label">
-                  Email
+                  <strong> Email</strong>
                 </label>
                 <input
                   type="text"
@@ -335,7 +352,7 @@ const Checkout = (props) => {
               </div>
               <div className="col-12 mt-2">
                 <label htmlFor="address" className="form-label">
-                  Ghi chú
+                  <strong>Ghi chú</strong>
                 </label>
                 <textarea
                   className="form-control"
@@ -347,7 +364,7 @@ const Checkout = (props) => {
               </div>
             </div>
             <label htmlFor="lastName" className="form-label mt-3">
-              Phương thức thanh toán
+              <strong>Phương thức thanh toán</strong>
             </label>
             <div className="form-check">
               <input
@@ -358,12 +375,13 @@ const Checkout = (props) => {
                 checked
                 value="false"
                 {...register("payment", { required: true })}
+                onChange={(e) => changePaymentHandler(e.target.value)}
               />
               <label className="form-check-label" htmlFor="exampleRadios1">
                 Thanh toán khi giao hàng(COD) <br />
               </label>
             </div>
-            <div className="form-check">
+            <div className="form-check mt-2">
               <input
                 className="form-check-input"
                 type="radio"
@@ -371,15 +389,16 @@ const Checkout = (props) => {
                 id="exampleRadios2"
                 value="true"
                 {...register("payment", { required: true })}
+                onChange={(e) => changePaymentHandler(e.target.value)}
               />
               <label className="form-check-label" htmlFor="exampleRadios2">
-                Thanh toán qua Momo <br />
+                Thanh toán qua Paypal <br />
               </label>
             </div>
             <button
               className="btn btn-primary btn-lg mt-5 mb-5"
               type="submit"
-              style={{marginLeft: 680}}
+              style={{ marginLeft: 680 }}
             >
               Đặt hàng
             </button>

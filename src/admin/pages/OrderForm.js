@@ -1,29 +1,76 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { getOrderById, getOrderDetailByOrderId, updateOrder } from "../../api/OrderApi";
+import { getAllOrderStatus } from "../../api/OrderStatusApi";
+import { useParams, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { NavLink, useHistory, useParams } from "react-router-dom";
-
-const orderStatus = ["Đang xử lí", "Đang vận chuyển", "Đã giao", "Đã hủy"];
 
 const OrderForm = () => {
+  const [order, setOrder] = useState();
+  const [orderStatus, setOrderStatus] = useState([]);
+  const [orderDetail, setOrderDetail] = useState([]);
+  const [amount, setAmount] = useState();
+  const [sub, setSub] = useState();
   const id = useParams();
+  const history = useHistory();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   useEffect(() => {
     onLoad();
   }, []);
 
-  const onLoad = () => {};
+  const onLoad = () => {
+    getAllOrderStatus()
+      .then((resp) => setOrderStatus(resp.data))
+      .catch((error) => console.log(error));
+    getOrderById(id.id)
+      .then((resp) => {
+        setOrder(resp.data);
+        reset({
+          ...resp.data,
+          orderStatus: resp.data.orderStatus.id,
+        });
+        setAmount(resp.data.total);
+      })
+      .catch((error) => console.log(error));
+    getOrderDetailByOrderId(id.id)
+      .then((resp) => {
+        setOrderDetail(resp.data);
+        const result = resp.data.reduce(
+          (price, item) => price + item.sellPrice * item.quantity,
+          0
+        );
+        setSub(result);
+      })
+      .catch((error) => console.log(error));
+  };
 
-  const onSubmitHandler = async (data) => {};
+  const onSubmitHandler = (data) => {
+    const result = {
+      orderId: order.id,
+      address: data.address,
+      fullname: data.fullname,
+      phone: data.phone,
+      email: data.email,
+      note: data.note,
+      isPending: data.isPending
+    }
+     updateOrder(result)
+     .then(() => {
+      toast.success("Cập nhật thành công.");
+      history.push('/orders')
+     })
+     .catch((error) => toast.error(error.response.data.Errors));
+  };
   return (
     <div className="pb-3 container-fluid card">
       <div className="py-3 col-10 offset-1 text-center">
-        <h2 className="text-danger">Đơn hàng {id.id}</h2>
+        <h2 className="text-danger">Đơn hàng #OD{id.id}</h2>
       </div>
       <div className="row">
         <div className="col-md-5 col-lg-4 order-md-last">
@@ -31,17 +78,34 @@ const OrderForm = () => {
             <span className="text-dark">Chi tiết đơn hàng</span>
           </h4>
           <ul className="list-group mb-3">
-            <li className="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 className="my-0">Adidas</h6>
-                <small className="text-muted">1.000.000</small>
-              </div>
-              <strong>1.000.000</strong>
-            </li>
-
+            {orderDetail &&
+              orderDetail.map((item, index) => (
+                <li
+                  className="list-group-item d-flex justify-content-between lh-sm"
+                  key={index}
+                >
+                  <div>
+                    <h6 className="my-0">
+                      {item.attribute.id} - {item.attribute.size}
+                    </h6>
+                    <small className="text-muted">
+                      {item.sellPrice.toLocaleString()} x {item.quantity}
+                    </small>
+                  </div>
+                  <strong>
+                    {(item.sellPrice * item.quantity).toLocaleString()}
+                  </strong>
+                </li>
+              ))}
+            {sub > amount && (
+              <li className="list-group-item d-flex justify-content-between">
+                <span>Giá giảm (VND)</span>
+                <strong>- {(sub - amount).toLocaleString()}</strong>
+              </li>
+            )}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng tiền (VND)</span>
-              <strong>1000000</strong>
+              <strong>{amount && amount.toLocaleString()}</strong>
             </li>
           </ul>
         </div>
@@ -53,19 +117,16 @@ const OrderForm = () => {
           >
             <div className="row g-3">
               <div className="col-12 mt-2">
-                <label htmlFor="address" className="form-label">
-                  Địa chỉ
-                </label>
+                <label className="form-label">Địa chỉ</label>
                 <textarea
                   className="form-control"
                   id="exampleFormControlTextarea1"
                   rows={3}
-                  defaultValue={""}
                   {...register("address", {
                     required: true,
                     pattern: /^\s*\S+.*/,
                   })}
-                />
+                ></textarea>
                 {errors.address && (
                   <div className="alert alert-danger" role="alert">
                     Địa chỉ không hợp lệ!
@@ -74,28 +135,24 @@ const OrderForm = () => {
               </div>
 
               <div className="col-sm-6 mt-2">
-                <label htmlFor="lastName" className="form-label">
-                  Họ tên
-                </label>
+                <label className="form-label">Họ tên</label>
                 <input
                   type="text"
                   className="form-control"
                   id="lastName"
-                  {...register("name", {
+                  {...register("fullname", {
                     required: true,
                     pattern: /^\s*\S+.*/,
                   })}
                 />
-                {errors.name && (
+                {errors.fullname && (
                   <div className="alert alert-danger" role="alert">
                     Họ tên không hợp lệ!
                   </div>
                 )}
               </div>
               <div className="col-sm-6 mt-2">
-                <label htmlFor="lastName" className="form-label">
-                  Số điện thoại
-                </label>
+                <label className="form-label">Số điện thoại</label>
                 <input
                   type="text"
                   className="form-control"
@@ -112,9 +169,7 @@ const OrderForm = () => {
                 )}
               </div>
               <div className="col-sm-6 mt-2">
-                <label htmlFor="lastName" className="form-label">
-                  Email
-                </label>
+                <label className="form-label">Email</label>
                 <input
                   type="text"
                   className="form-control"
@@ -131,63 +186,38 @@ const OrderForm = () => {
                 )}
               </div>
               <div className="col-12 mt-2">
-                <label htmlFor="address" className="form-label">
-                  Ghi chú
-                </label>
+                <label className="form-label">Ghi chú</label>
                 <textarea
                   className="form-control"
                   id="exampleFormControlTextarea1"
                   rows={3}
-                  defaultValue={""}
                   {...register("note", { required: false })}
                 />
               </div>
               <div className="col-sm-6 mt-2">
-                <label htmlFor="firstName" className="form-label">
-                  Trạng thái đơn hàng
-                </label>
+                <label className="form-label">Trạng thái thanh toán</label>
                 <select
                   className="form-control"
-                  {...register("province", { required: true })}
-                  required
+                  {...register("isPending", { required: false })}
                 >
-                  <option selected disabled hidden></option>
-                  {orderStatus.map((item, index) => (
-                    <option key={index} value={index + 1}>
-                      {item}
-                    </option>
-                  ))}
+                  <option value="false">Chưa thanh toán</option>
+                  <option value="true">Đã thanh toán</option>
                 </select>
               </div>
-              <div className="mt-5 ml-5">
-                <div className="custom-control custom-radio custom-control-inline">
-                  <input
-                    type="radio"
-                    id="customRadioInline1"
-                    name="customRadioInline1"
-                    className="custom-control-input"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor="customRadioInline1"
-                  >
-                    Đã thanh toán
-                  </label>
-                </div>
-                <div className="custom-control custom-radio custom-control-inline">
-                  <input
-                    type="radio"
-                    id="customRadioInline2"
-                    name="customRadioInline1"
-                    className="custom-control-input"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor="customRadioInline2"
-                  >
-                    Chưa thanh toán
-                  </label>
-                </div>
+              <div className="col-sm-6 mt-2">
+                <label className="form-label">Trạng thái đơn hàng</label>
+                <select
+                  className="form-control"
+                  {...register("orderStatus", { required: false })}
+                  disabled={true}
+                >
+                  {orderStatus &&
+                    orderStatus.map((item, index) => (
+                      <option key={index} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
               </div>
             </div>
 

@@ -143,13 +143,13 @@ const Order = () => {
                     {orders &&
                       orders.map((item, index) => (
                         <tr key={index}>
-                          <th scope="row">
-                            <NavLink to={`/order-detail/${item.id}`} exact>
-                              #OD{item.id}
-                            </NavLink>{" "}
-                          </th>
+                          <th scope="row">#OD{item.id}</th>
                           <th>{item.modifyDate}</th>
-                          <th>
+                          <th
+                            className={
+                              item.isPending ? "text-success" : "text-danger"
+                            }
+                          >
                             {item.isPending
                               ? "Đã thanh toán"
                               : "Chưa thanh toán"}
@@ -212,10 +212,12 @@ const Order = () => {
                             </div>
                           </th>
                           <th>
-                            <i
-                              class="fa fa-pencil-square-o"
-                              aria-hidden="true"
-                            ></i>
+                            <NavLink to={`/order-detail/${item.id}`} exact>
+                              <i
+                                class="fa fa-pencil-square-o"
+                                aria-hidden="true"
+                              ></i>
+                            </NavLink>{" "}
                           </th>
                         </tr>
                       ))}

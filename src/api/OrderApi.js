@@ -4,7 +4,14 @@ export const createOrder = (data) =>{
     const url = `api/site/create-order`;
     return Instance.post(url, data);
 }
-
+export const updateOrder = (data) =>{
+    const url = `api/site/update-order`;
+    return Instance.post(url, data);
+}
+export const cancelOrder = (id) =>{
+    const url = `api/site/cancel-order?id=${id}`;
+    return Instance.get(url);
+}
 export const getAllOrder = (id, status) =>{
     const url = `api/site/get-orders?id=${id}&status=${status}`;
     return Instance.get(url);

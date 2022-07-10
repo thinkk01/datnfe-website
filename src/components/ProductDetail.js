@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
 
-const ProductDetail = () => {
+const ProductDetail = (props) => {
   const { id } = useParams();
   const [item, setItem] = useState();
   const [attributes, setAttributes] = useState();
@@ -19,6 +19,7 @@ const ProductDetail = () => {
       setItem(res.data);
       setAttributes(res.data.attributes);
     });
+    props.changeHeaderHandler(2);
   }, [id]);
 
   const onModify = (price, stock, flag) => {

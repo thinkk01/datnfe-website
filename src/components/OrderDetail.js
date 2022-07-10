@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getOrderById, getOrderDetailByOrderId } from "../api/OrderApi";
 import { useParams } from "react-router-dom";
 
-const OrderDetail = () => {
+const OrderDetail = (props) => {
   const [orderDetail, setOrderDetail] = useState([]);
   const [order, setOrder] = useState({});
   const { id } = useParams();
@@ -17,7 +17,7 @@ const OrderDetail = () => {
   const onLoad = () => {
     getOrderById(id).then((resp) => {
       setOrder(resp.data);
-      setSale(resp.data.voucher.discount);
+      setSale(resp.data.voucher ? resp.data.voucher.discount : 0);
       setTotal(resp.data.total);
     });
     getOrderDetailByOrderId(id).then((resp) => {
@@ -28,6 +28,7 @@ const OrderDetail = () => {
       );
       setAmount(result);
     });
+    props.changeHeaderHandler(4);
   };
 
   return (

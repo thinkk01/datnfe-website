@@ -16,6 +16,7 @@ const OutStock = (props) => {
     getCartItemByAccountId(2).then((resp) => {
       setCart(resp.data);
     });
+    props.changeHeaderHandler(5);
   };
 
   const reloadCartItemHandler = () => {

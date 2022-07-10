@@ -96,6 +96,16 @@ input:focus {
     border-radius: var(--border-radius);
 }
 
+.mini-card{
+    padding: 15px;
+    margin-bottom: 30px;
+    background-color: var(--main-bg);
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+}
+.mini-card li{
+    font-size: 24;
+}
 .full-height {
     height: 100%;
 }
@@ -151,3 +161,42 @@ input:focus {
     background-color: var(--main-color-orange);
     color: #fff;
 }
+
+.mini-item {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    transition: color 0.3s ease 0s;
+    color: var(--main-color);
+}
+
+.mini-item.active {
+    border-radius: var(--border-radius);
+    background-image: linear-gradient(
+        to right,
+        var(--main-color),
+        var(--second-color)
+    );
+    color: var(--txt-white);
+}
+
+.mini-ul{
+    margin-left: 30%;
+}
+
+.mini-img{
+    margin-left: 10%;
+}
+
+.mini-pro:hover {
+    border-radius: var(--border-radius);
+    background-image: linear-gradient(
+        to right,
+        var(--main-color),
+        var(--second-color)
+    );
+    color: var(--txt-white);
+}
+.table td, th {
+    text-align: center;   
+ }
