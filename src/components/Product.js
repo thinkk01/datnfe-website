@@ -5,7 +5,7 @@ const Product = (props) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState({});
-
+  const [active, setActive] = useState(true);
   var rows = new Array(total).fill(0).map((zero, index) => (
     <li
       className={page === index + 1 ? "page-item active" : "page-item"}
@@ -18,7 +18,9 @@ const Product = (props) => {
   ));
 
   useEffect(() => {
-    getAllProducts(page, 9).then((response) => setProducts(response.data));
+    getAllProducts(page, 9, active).then((response) =>
+      setProducts(response.data)
+    );
     getTotalPage().then((res) => setTotal(res.data));
     props.changeHeaderHandler(2);
   }, [page]);
@@ -48,7 +50,7 @@ const Product = (props) => {
               <h4 className="text-danger fw-bolder">Giá</h4>
               <ul className="list-group">
                 <li className="list-group-item active" aria-current="true">
-                 Dưới 1 triệu
+                  Dưới 1 triệu
                 </li>
                 <li className="list-group-item">1.000.000 - 2.000.000 đ</li>
                 <li className="list-group-item">2.000.000 - 3.000.000 đ</li>
@@ -69,11 +71,11 @@ const Product = (props) => {
                             <i className="fa fa-star" aria-hidden="true"></i>
                             <span className="ml-1">New</span>
                           </span>
-                        </div>                        
+                        </div>
                       </div>
                       <NavLink to={`/product-detail/${item.id}`}>
                         <img
-                          src={require(`../static/images/${item.imageLink}`)}
+                          src={require(`../static/images/${item.image}`)}
                           style={{ width: 150, height: 150 }}
                           alt="Product"
                         />

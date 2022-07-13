@@ -14,20 +14,27 @@ const Home = (props) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState({});
+  const [active, setActive] = useState(true);
 
   var rows = new Array(total).fill(0).map((zero, index) => (
     <li
       className={page === index + 1 ? "page-item active" : "page-item"}
       key={index}
     >
-      <button className="page-link" onClick={() => onChangePage(index + 1)}>
+      <button
+        className="page-link"
+        style={{ borderRadius: 50 }}
+        onClick={() => onChangePage(index + 1)}
+      >
         {index + 1}
       </button>
     </li>
   ));
 
   useEffect(() => {
-    getAllProducts(page, 9).then((response) => setProducts(response.data));
+    getAllProducts(page, 9, active).then((response) =>
+      setProducts(response.data)
+    );
     getTotalPage().then((res) => setTotal(res.data));
     props.changeHeaderHandler(1);
   }, [page]);
@@ -84,7 +91,7 @@ const Home = (props) => {
           </div>
         </div>
       </div>
-      <div className="container padding">
+      <div className="col-11 container-fluid card">
         <div className="row padding d-flex">
           {products &&
             products.map((item, index) => (
@@ -96,11 +103,11 @@ const Home = (props) => {
                         <i className="fa fa-star" aria-hidden="true"></i>
                         <span className="ml-1">New</span>
                       </span>
-                    </div>                   
+                    </div>
                   </div>
                   <NavLink to={`/product-detail/${item.id}`}>
                     <img
-                      src={require(`../static/images/${item.imageLink}`)}
+                      src={require(`../static/images/${item.image}`)}
                       style={{ width: 150, height: 150 }}
                       alt="Product"
                       className="mini-card"
@@ -110,7 +117,11 @@ const Home = (props) => {
                     <div className="d-flex justify-content-between">
                       <div>
                         <p className="h4 text-primary mini-card">
-                          {(item.price * (100 - item.discount)/100).toLocaleString()} đ
+                          {(
+                            (item.price * (100 - item.discount)) /
+                            100
+                          ).toLocaleString()}{" "}
+                          đ
                         </p>
                       </div>
                     </div>
@@ -123,7 +134,10 @@ const Home = (props) => {
                     </p>
                     <p className="mb-0">
                       <strong>
-                        <NavLink to={`/product-detail/${item.id}`} className="text-secondary ">
+                        <NavLink
+                          to={`/product-detail/${item.id}`}
+                          className="text-secondary "
+                        >
                           {item.name}
                         </NavLink>
                       </strong>
@@ -141,10 +155,15 @@ const Home = (props) => {
                           <b>Yêu thích: </b> {item.view} lượt
                         </p>
                         <p className="mb-0 small">
-                          <b>Giá gốc: {item.price.toLocaleString()} đ</b> 
+                          <b>Giá gốc: {item.price.toLocaleString()} đ</b>
                         </p>
                         <p className="mb-0 small text-danger">
-                          <span className="font-weight-bold">Tiết kiệm: </span> {(item.price * (item.discount)/100).toLocaleString()} đ ({item.discount}%)
+                          <span className="font-weight-bold">Tiết kiệm: </span>{" "}
+                          {(
+                            (item.price * item.discount) /
+                            100
+                          ).toLocaleString()}{" "}
+                          đ ({item.discount}%)
                         </p>
                       </div>
                     </div>
@@ -183,14 +202,22 @@ const Home = (props) => {
       <nav aria-label="Page navigation">
         <ul className="pagination offset-5 mt-3">
           <li className={page === 1 ? "page-item disabled" : "page-item"}>
-            <button className="page-link" onClick={() => onChangePage(1)}>
-              First
+            <button
+              className="page-link"
+              style={{ borderRadius: 50 }}
+              onClick={() => onChangePage(1)}
+            >
+              {`<<`}
             </button>
           </li>
           {rows}
           <li className={page === total ? "page-item disabled" : "page-item"}>
-            <button className="page-link" onClick={() => onChangePage(total)}>
-              Last
+            <button
+              className="page-link"
+              style={{ borderRadius: 50 }}
+              onClick={() => onChangePage(total)}
+            >
+              {`>>`}
             </button>
           </li>
         </ul>

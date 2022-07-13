@@ -12,8 +12,8 @@ export const cancelOrder = (id) =>{
     const url = `api/site/cancel-order?id=${id}`;
     return Instance.get(url);
 }
-export const getAllOrder = (id, status) =>{
-    const url = `api/site/get-orders?id=${id}&status=${status}`;
+export const getAllOrder = (id, status, page, size) =>{
+    const url = `api/site/get-orders?id=${id}&status=${status}&page=${page}&size=${size}`;
     return Instance.get(url);
 }
 

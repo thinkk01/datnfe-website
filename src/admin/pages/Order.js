@@ -73,7 +73,7 @@ const Order = () => {
           <h3>Đơn hàng</h3>
         </div>
         <div className="mb-3 mt-3">
-          <div className="form-check form-check-inline">
+          <div className="form-check form-check-inline mr-5 ml-5">
             <input
               className="form-check-input"
               type="radio"
@@ -86,7 +86,7 @@ const Order = () => {
           </div>
           {orderStatuses &&
             orderStatuses.map((item, index) => (
-              <div className="form-check form-check-inline" key={index}>
+              <div className="form-check form-check-inline mr-5 ml-5" key={index}>
                 <input
                   className="form-check-input"
                   type="radio"

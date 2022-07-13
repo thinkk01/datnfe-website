@@ -12,14 +12,34 @@ const Order = (props) => {
   const [status, setStatus] = useState(0);
   const [show, setShow] = useState(false);
   const [obj, setObj] = useState({});
+  const [total, setTotal] = useState();
+  const [page, setPage] = useState(1);
+
+  var rows = new Array(total).fill(0).map((zero, index) => (
+    <li
+      className={page === index + 1 ? "page-item active" : "page-item"}
+      key={index}
+    >
+      <button className="page-link" style={{ borderRadius: 50 }} onClick={() => onChangePage(index + 1)}>
+        {index + 1}
+      </button>
+    </li>
+  ));
+
+  const onChangePage = (page) => {
+    setPage(page);
+  };
 
   useEffect(() => {
     onLoad();
-  }, []);
+  }, [page]);
 
   const onLoad = () => {
-    getAllOrder(2, status)
-      .then((res) => setOrder(res.data))
+    getAllOrder(2, status, page, 8)
+      .then((res) => {
+        setOrder(res.data.content);
+        setTotal(res.data.totalPages);
+      })
       .catch((error) => console.log(error.response.data.Errors));
 
     getAllOrderStatus()
@@ -50,9 +70,13 @@ const Order = (props) => {
     setShow(false);
   };
   const getAllOrderByStatus = (value) => {
+    setPage(1);
     setStatus(value);
-    getAllOrder(2, value)
-      .then((res) => setOrder(res.data))
+    getAllOrder(2, value, page, 8)
+      .then((res) => {
+        setOrder(res.data.content);
+        setTotal(res.data.totalPages);
+      })
       .catch((error) => console.log(error.response.data.Errors));
   };
 
@@ -163,16 +187,27 @@ const Order = (props) => {
                   ))}
               </tbody>
             </table>
-            <nav aria-label="navigation">
+            <nav aria-label="navigation" className="col-4 offset-5">
               <ul className="pagination">
-                <li className="page-item disabled">
-                  <button className="page-link">First</button>
+                <li className={page == 1 ? "page-item disabled" : "page-item"}>
+                  <button
+                    className="page-link"
+                    style={{ borderRadius: 50 }}
+                    onClick={() => onChangePage(1)}
+                  >{`<<`}</button>
                 </li>
-                <li className="page-item active">
-                  <button className="page-link">1</button>
-                </li>
-                <li className="page-item disabled">
-                  <button className="page-link">Last</button>
+                {rows}
+                <li
+                  className={page == total ? "page-item disabled" : "page-item"}
+                >
+                  <button
+                    className="page-link"
+                    style={{ borderRadius: 50 }}
+                    onClick={() => onChangePage(total)}
+                  >
+                    {" "}
+                    {`>>`}
+                  </button>
                 </li>
               </ul>
             </nav>

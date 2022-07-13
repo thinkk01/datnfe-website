@@ -5,6 +5,7 @@ import { getProductById } from "../api/ProductApi";
 import { useParams } from "react-router-dom";
 import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
+import { getAttribute } from "../api/AttributeApi";
 
 const ProductDetail = (props) => {
   const { id } = useParams();
@@ -13,14 +14,26 @@ const ProductDetail = (props) => {
   const [price, setPrice] = useState();
   const [stock, setStock] = useState();
   const [flag, setFlag] = useState();
+  const [count, setCount] = useState(1);
 
   useEffect(() => {
-    getProductById(id).then((res) => {
-      setItem(res.data);
-      setAttributes(res.data.attributes);
-    });
-    props.changeHeaderHandler(2);
+    onLoad();
   }, [id]);
+
+  const onLoad = () => {
+    getProductById(id)
+      .then((res) => {
+        setItem(res.data);
+        setAttributes(res.data.attributes);
+      })
+      .catch((error) => console.log(error));
+    getAttribute(id, 39)
+      .then((res) => {
+        onModify(res.data.price, res.data.stock, res.data.id);
+      })
+      .catch((error) => console.log(error));
+    props.changeHeaderHandler(2);
+  };
 
   const onModify = (price, stock, flag) => {
     setPrice(price);
@@ -33,17 +46,27 @@ const ProductDetail = (props) => {
       const data = {
         accountId: accountId,
         attributeId: attributeId,
-        quantity: 1,
-        lastPrice: lastPrice
+        quantity: count,
+        lastPrice: lastPrice,
       };
       try {
         await modifyCartItem(data);
         toast.success("Thêm vào giỏ hàng thành công.");
       } catch (error) {
+        setCount(1);
         toast.error(error.response.data.Errors);
       }
     } else {
       toast.warning("Mời chọn size.");
+    }
+  };
+
+  const updateCount = (value) => {
+    if (value <= 0 || value > 100) {
+      setCount(1);
+      toast.error("Số lượng không hợp lệ");
+    } else {
+      setCount(value);
     }
   };
   return (
@@ -70,10 +93,16 @@ const ProductDetail = (props) => {
                     <p className="card-text fw-bold fs-5">Mã SP: {item.code}</p>
                     <hr />
                     <h4 className="card-text fw-bolder text-danger fs-5">
-                      Giá bán: {price && (price * (100 - item.discount)/100).toLocaleString() + " đ"}
+                      Giá bán:{" "}
+                      {price &&
+                        (
+                          (price * (100 - item.discount)) /
+                          100
+                        ).toLocaleString() + " đ"}
                     </h4>
                     <h6 className="card-text fw-bolder fs-5">
-                      Giá gốc: <del>{price && price.toLocaleString() + " đ"}</del>
+                      Giá gốc:{" "}
+                      <del>{price && price.toLocaleString() + " đ"}</del>
                     </h6>
                     <h6 className="card-text fw-bolder fs-5" hidden>
                       Sản phẩm còn: {stock && stock + " đôi"}
@@ -84,7 +113,7 @@ const ProductDetail = (props) => {
                       {attributes.map((i, index) => (
                         <div
                           className="form-check form-check-inline"
-                          key={i.id}
+                          key={index}
                         >
                           <input
                             className="form-check-input"
@@ -94,14 +123,43 @@ const ProductDetail = (props) => {
                             defaultValue="option3"
                             onChange={() => onModify(i.price, i.stock, i.id)}
                             disabled={i.stock === 0}
+                            checked={flag == i.id}
                           />
                           <label className="form-check-label">{i.size}</label>
                         </div>
                       ))}
                     </div>
+                    <div className="mt-5">
+                      <button
+                        className="btn btn-outline-dark"
+                        onClick={() => updateCount(1)}
+                      >
+                        +
+                      </button>
+                      <input
+                        type="number"
+                        name="quantity"
+                        style={{ width: "60px" }}
+                        value={count}
+                        onChange={(e) => updateCount(e.target.value)}
+                        min={1}
+                      />
+                      <button
+                        className="btn btn-outline-dark"
+                        onClick={() => updateCount(-1)}
+                      >
+                        -
+                      </button>
+                    </div>
                     <hr />
                     <button
-                      onClick={() => onAddCartHandler(2, flag, price * (100 - item.discount)/100)}
+                      onClick={() =>
+                        onAddCartHandler(
+                          2,
+                          flag,
+                          (price * (100 - item.discount)) / 100
+                        )
+                      }
                       className="btn btn-primary text-white"
                     >
                       Thêm vào giỏ
@@ -111,7 +169,7 @@ const ProductDetail = (props) => {
                     </NavLink>
                   </div>
                 </div>
-                <div className="row offset-2 mt-5">
+                <div className="container row offset-3 mt-5">
                   <img
                     src={require(`../static/images/${item.images[0]}`)}
                     alt="..."

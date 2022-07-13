@@ -190,13 +190,14 @@ input:focus {
 
 .mini-pro:hover {
     border-radius: var(--border-radius);
-    background-image: linear-gradient(
-        to right,
-        var(--main-color),
-        var(--second-color)
-    );
-    color: var(--txt-white);
+    background-color: lightgoldenrodyellow;
+    color: var(--txt-red);
 }
 .table td, th {
     text-align: center;   
  }
+ label{
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #676767;
+  }

@@ -121,7 +121,7 @@ const Cart = (props) => {
                     <tr key={index}>
                       <th>
                         <input
-                          className="form-check-input ml-3 mt-5"
+                          className="form-check-input ml-1 mt-5"
                           type="checkbox"
                           value={item.id}
                           id="defaultCheck1"

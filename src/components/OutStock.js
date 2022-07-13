@@ -48,7 +48,7 @@ const OutStock = (props) => {
             </button>
           </div>
           <div className="row col-12 mb-1">
-            <table className="table">
+            <table className="table table-striped table-bordered">
               <thead>
                 <tr>
                   <th scope="col">Ảnh</th>
@@ -78,7 +78,7 @@ const OutStock = (props) => {
                       </td>
                       <td>
                         {item.quantity > item.stock && (
-                          <div className="mt-5 row">
+                          <div className="mt-5 ml-5 row">
                             <h6 className="card-title bolder mr-3">
                               {item.quantity}
                             </h6>
@@ -87,7 +87,7 @@ const OutStock = (props) => {
                           </div>
                         )}
                         {item.quantity <= item.stock && (
-                          <div className="mt-5 row">
+                          <div className="mt-5 ml-5 row">
                             <h6 className="card-title bolder mr-3">
                               {item.quantity}
                             </h6>
