@@ -17,6 +17,9 @@ import { useState } from "react";
 import OutStock from "../components/OutStock";
 import Error from "../components/Error";
 import Paypal from "../components/Paypal";
+import Search from "../components/Search";
+import Register from '../authenticate/Register';
+import SignIn from '../authenticate/SignIn';
 
 const UserLayOut = () => {
   const [show, setShow] = useState(false);
@@ -26,11 +29,11 @@ const UserLayOut = () => {
   const [temp, setTemp] = useState([]);
   const [outStock, setOutStock] = useState([]);
   const [buy, setBuy] = useState([]);
-  const [orderCache, setOrderCache] = useState({});
+  const [keyword, setKeyword] = useState('');
   const [header, setHeader] = useState(1);
 
-  const orderCacheHandler = (data) =>{
-    setOrderCache(data);
+  const searchHandler = (keyword) =>{
+    setKeyword(keyword);
   }
   const changeHeaderHandler = (value) => {
     setHeader(value);
@@ -72,7 +75,7 @@ const UserLayOut = () => {
   };
   return (
     <div className="col-10 offset-1">
-      <Header header={header}></Header>
+      <Header header={header} searchHandler={searchHandler}></Header>
       <Switch>
         <Route path="/" exact>
           <Home changeHeaderHandler={changeHeaderHandler}></Home>
@@ -111,11 +114,20 @@ const UserLayOut = () => {
         <Route path="/out-of-stock" exact>
           <OutStock outStock={outStock} buy={buy} changeHeaderHandler={changeHeaderHandler}></OutStock>
         </Route>
+        <Route path="/search-page" exact>
+          <Search keyword={keyword}></Search>
+        </Route>
         <Route path="/payment-page" exact>
           <Paypal></Paypal>
         </Route>
         <Route path="/error-page" exact>
           <Error></Error>
+        </Route>
+        <Route path="/register" exact>
+          <Register></Register>
+        </Route>
+        <Route path="/sign-in" exact>
+          <SignIn></SignIn>
         </Route>
       </Switch>
       <Footer></Footer>

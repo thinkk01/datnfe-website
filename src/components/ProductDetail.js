@@ -132,7 +132,7 @@ const ProductDetail = (props) => {
                     <div className="mt-5">
                       <button
                         className="btn btn-outline-dark"
-                        onClick={() => updateCount(1)}
+                        onClick={() => updateCount(count + 1)}
                       >
                         +
                       </button>
@@ -146,7 +146,7 @@ const ProductDetail = (props) => {
                       />
                       <button
                         className="btn btn-outline-dark"
-                        onClick={() => updateCount(-1)}
+                        onClick={() => updateCount(count - 1)}
                       >
                         -
                       </button>

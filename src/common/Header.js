@@ -1,9 +1,17 @@
 import React from "react";
 import "../static/css/style.css";
 import logo from "../static/images/logo-sneaker1.jpg";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 
 const Header = (props) => { 
+  const history = useHistory();
+
+  const submitHandler = (e) =>{
+    e.preventDefault();
+    props.searchHandler(e.target.keyword.value);
+    history.push('/search-page')
+  }
+
   return (
     <div className="mini-card">
       {/* Navigation */}
@@ -39,19 +47,23 @@ const Header = (props) => {
               </NavLink>
             </li>
           </ul>
-          <form className="form-inline my-2 my-lg-0 ">
+          <form className="form-inline my-2 my-lg-0" onSubmit={(e) => submitHandler(e)}>
             <input
               className="form-control mr-sm-2"
               type="search"
               aria-label="Search"
+              name="keyword"
             />
+            <button>
             <i
               className="fa fa-search ml-1"
               aria-hidden="true"
               style={{ fontSize: "24px" }}
             ></i>
+            </button>
           </form>
-          <NavLink to="" className="text-dark ml-3 mr-5">
+          
+          <NavLink to="/sign-in" className="text-dark ml-3 mr-5">
             <i
               className="fa fa-user"
               aria-hidden="true"
