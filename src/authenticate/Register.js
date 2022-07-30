@@ -105,7 +105,7 @@ const Register = () => {
                           <label htmlFor="birthdayDate" className="form-label">
                             Họ tên
                           </label>
-                          {errors.name && (
+                          {errors.fullName && (
                             <div className="alert alert-danger" role="alert">
                               Họ tên không hợp lệ!
                             </div>
