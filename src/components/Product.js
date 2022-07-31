@@ -26,7 +26,7 @@ const Product = (props) => {
 
   useEffect(() => {
     getAllProducts(page, 9, true).then((response) =>
-      setProducts(response.data)
+      setProducts(response.data.content)
     );
     getTotalPage().then((res) => setTotal(res.data));
     props.changeHeaderHandler(2);

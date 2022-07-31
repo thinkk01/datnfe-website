@@ -33,7 +33,7 @@ const Home = (props) => {
 
   useEffect(() => {
     getAllProducts(page, 9, active).then((response) =>
-      setProducts(response.data)
+      setProducts(response.data.content)
     );
     getTotalPage().then((res) => setTotal(res.data));
     props.changeHeaderHandler(1);
