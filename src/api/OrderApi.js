@@ -1,39 +1,39 @@
 import Instance from '../axios/Instance'
 
 export const createOrder = (data) =>{
-    const url = `api/site/create-order`;
+    const url = `/api/site/order/create`;
     return Instance.post(url, data);
 }
 export const updateOrder = (data) =>{
-    const url = `api/site/update-order`;
+    const url = `/api/site/order/update`;
     return Instance.post(url, data);
 }
 export const cancelOrder = (id) =>{
-    const url = `api/site/cancel-order?id=${id}`;
+    const url = `/api/site/order/cancel?id=${id}`;
     return Instance.get(url);
 }
 export const getAllOrder = (id, status, page, size) =>{
-    const url = `api/site/get-orders?id=${id}&status=${status}&page=${page}&size=${size}`;
+    const url = `/api/site/order/get-orders?id=${id}&status=${status}&page=${page}&size=${size}`;
     return Instance.get(url);
 }
 
 export const getAllOrderAndPagination = (status, page, size) =>{
-    const url = `api/site/get-orders-and-pagination?page=${page}&size=${size}&status=${status}`;
+    const url = `/api/admin/order/get-orders-and-pagination?page=${page}&size=${size}&status=${status}`;
     return Instance.get(url);
 }
 
 export const getOrderById = (id) =>{
-    const url = `api/site/get-order-by-id?id=${id}`;
+    const url = `/api/site/order/get-order-by-id?id=${id}`;
     return Instance.get(url);
 }
 
 export const getOrderDetailByOrderId = (id) =>{
-    const url = `api/site/get-order-detail-by-id?id=${id}`;
+    const url = `/api/site/order/get-order-detail-by-id?id=${id}`;
     return Instance.get(url);
 }
 
 export const updateOrderWithStatus = (orderId, statusId) =>{
-    const url = `api/site/update-order-with-status?id=${orderId}&status=${statusId}`;
+    const url = `/api/admin/order/update-order-with-status?id=${orderId}&status=${statusId}`;
     return Instance.get(url);
 }
 

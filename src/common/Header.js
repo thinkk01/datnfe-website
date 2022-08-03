@@ -86,7 +86,7 @@ const Header = (props) => {
               </NavLink>
             </li>
             <li className={props.header == 5 ? "nav-item mr-4  mini-item active" : "nav-item mr-4  mini-item"}>
-              <NavLink className="nav-link" to="/store-service" exact>
+              <NavLink className="nav-link" to="/blog" exact>
                 Blog
               </NavLink>
             </li>

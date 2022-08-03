@@ -20,6 +20,7 @@ import Paypal from "../components/Paypal";
 import Search from "../components/Search";
 import Register from '../authenticate/Register';
 import SignIn from '../authenticate/SignIn';
+import Blog from "../components/blog/Blog";
 
 const UserLayOut = () => {
   const [show, setShow] = useState(false);
@@ -128,6 +129,9 @@ const UserLayOut = () => {
         </Route>
         <Route path="/sign-in" exact>
           <SignIn></SignIn>
+        </Route>
+        <Route path="/blog" exact>
+          <Blog changeHeaderHandler={changeHeaderHandler}></Blog>
         </Route>
       </Switch>
       <Footer></Footer>
