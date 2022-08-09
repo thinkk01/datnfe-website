@@ -39,8 +39,8 @@ const Register = () => {
                 style={{ borderRadius: "15px" }}
               >
                 <div className="card-body p-4 p-md-5">
-                  <h3 className="mb-4 pb-2 pb-md-0 mb-md-5">
-                    Đăng kí để nhận nhiều ưu đãi
+                  <h3 className="mb-4 pb-2 pb-md-0 mb-md-5 text-center">
+                    Đăng kí
                   </h3>
                   <form
                     className="needs-validation"

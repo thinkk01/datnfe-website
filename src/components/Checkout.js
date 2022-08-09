@@ -6,8 +6,7 @@ import { createOrder } from "../api/OrderApi";
 import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
 import { getVoucherByCode } from "../api/VoucherApi";
-import {getPaypalPayment} from '../api/PaymenApi'
-import {getAccountDetailByAccountId} from '../api/AccountApi'
+import Spinner from "./spinner/Spinner";
 
 const Checkout = (props) => {
   const [amount, setAmount] = useState();
@@ -19,6 +18,8 @@ const Checkout = (props) => {
   const [flag, setFlag] = useState(false);
   const [sub, setSub] = useState();
   const [payment, setPayment] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const history = useHistory();
 
   const {
@@ -33,9 +34,24 @@ const Checkout = (props) => {
 
   const onLoad = () => {
     getAllProvince().then((resp) => setInfo(resp.data));
-    getCartItemByAccountId(2).then((resp) => {
-      setCart(resp.data.filter((item) => props.buy.includes(item.id + "")));
-      const result = resp.data
+    if (props.user) {
+      getCartItemByAccountId(props.user.id).then((resp) => {
+        setCart(resp.data.filter((item) => props.buy.includes(item.id + "")));
+        const result = resp.data
+          .filter((item) => props.buy.includes(item.id + ""))
+          .reduce(
+            (price, item) =>
+              price +
+              (item.price * item.quantity * (100 - item.discount)) / 100,
+            0
+          );
+        setAmount(result);
+      });
+    } else {
+      setCart(
+        props.cartItem.filter((item) => props.buy.includes(item.id + ""))
+      );
+      const result = props.cartItem
         .filter((item) => props.buy.includes(item.id + ""))
         .reduce(
           (price, item) =>
@@ -43,7 +59,7 @@ const Checkout = (props) => {
           0
         );
       setAmount(result);
-    });
+    }
     props.changeHeaderHandler(3);
   };
 
@@ -84,7 +100,13 @@ const Checkout = (props) => {
     setWard(resp[0].wards);
   };
 
-  const onSubmitHandler = async (data) => {
+  const onSubmitHandler = (data) => {
+    setLoading(true);
+
+    setTimeout(() =>{
+      setLoading(false);
+    }, 10000);
+
     const order = {
       fullname: data.name,
       phone: data.phone,
@@ -93,7 +115,7 @@ const Checkout = (props) => {
       total: amount,
       note: data.note,
       isPending: data.payment,
-      accountId: 2,
+      accountId: props.user ? props.user.id : -1,
       code: voucher,
       orderDetails: cart.map((item) => ({
         quantity: item.quantity,
@@ -104,32 +126,33 @@ const Checkout = (props) => {
         },
       })),
     };
-    if(payment){
+    if (payment) {
       // console.log(order)
       // getPaypalPayment(order)
       // .then((res) => history.push(res.data))
       // .catch((error) => history.push('/error-page'))
-      history.push('/payment-page');
+      history.push("/payment-page");
       console.log(order);
-    }else{
-      try {
-        await createOrder(order).then((resp) => {
+    } else {
+      createOrder(order)
+        .then((resp) => {
           toast.success("Đặt hàng thành công");
-          history.push(`/order/detail/${resp.data.id}`);
-        });
-      } catch (error) {
-        history.push("/out-of-stock");
-      }
+          props.clearHandler();
+          history.push(`/order/detail/${resp.data.encodeUrl}`);
+        })
+        .catch(() => history.push("/out-of-stock"));
     }
   };
-  
-  const changePaymentHandler = (value) =>{
+
+  const changePaymentHandler = (value) => {
     setPayment(value);
-  }
+  };
   return (
     <div className="pb-3 container-fluid">
+    
       <div className="py-3 col-10 offset-1 text-center">
         <h2 className="text-danger">Thông tin mua hàng</h2>
+        {loading && <Spinner></Spinner>}
       </div>
       <div className="row">
         <div className="col-md-5 col-lg-4 order-md-last">

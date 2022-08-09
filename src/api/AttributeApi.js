@@ -13,3 +13,8 @@ export const getAttribute = (id, size) =>{
     const url = `/api/site/attribute/get-by-product?id=${id}&size=${size}`;
     return Instance.get(url);
 }
+
+export const getAttributeById = (id) =>{
+    const url = `/api/site/attribute/get-by-id?id=${id}`;
+    return Instance.get(url);
+}

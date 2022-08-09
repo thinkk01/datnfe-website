@@ -9,3 +9,9 @@ export const createAccount = (data) =>{
     const url = `/api/site/account/create`;
     return Instance.post(url, data);
 }
+
+export const signIn = (data) =>{
+    const url = '/api/site/login';
+    return Instance.post(url, data);
+}
+ 

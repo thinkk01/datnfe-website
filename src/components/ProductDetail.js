@@ -5,7 +5,7 @@ import { getProductById } from "../api/ProductApi";
 import { useParams } from "react-router-dom";
 import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
-import { getAttribute } from "../api/AttributeApi";
+import { getAttribute, getAttributeById } from "../api/AttributeApi";
 
 const ProductDetail = (props) => {
   const { id } = useParams();
@@ -15,6 +15,7 @@ const ProductDetail = (props) => {
   const [stock, setStock] = useState();
   const [flag, setFlag] = useState();
   const [count, setCount] = useState(1);
+  const [status, setStatus] = useState(true);
 
   useEffect(() => {
     onLoad();
@@ -32,33 +33,60 @@ const ProductDetail = (props) => {
         onModify(res.data.price, res.data.stock, res.data.id);
       })
       .catch((error) => console.log(error));
+    setStatus(stock > count);
     props.changeHeaderHandler(2);
   };
 
   const onModify = (price, stock, flag) => {
+    setStatus(stock > count);
     setPrice(price);
     setStock(stock);
     setFlag(flag);
   };
 
-  const onAddCartHandler = async (accountId, attributeId, lastPrice) => {
-    if (flag) {
-      const data = {
-        accountId: accountId,
-        attributeId: attributeId,
-        quantity: count,
-        lastPrice: lastPrice,
-      };
-      try {
-        await modifyCartItem(data);
-        toast.success("Thêm vào giỏ hàng thành công.");
-      } catch (error) {
-        setCount(1);
-        toast.error(error.response.data.Errors);
+  const onAddCartHandler = async ( attributeId, lastPrice) => {
+    if(!status){
+      toast.warning("Sản phẩm đã hết hàng.");
+    }else{
+      if (flag) {
+        if(props.user){
+          const data = {
+            accountId: props.user.id,
+            attributeId: attributeId,
+            quantity: count,
+            lastPrice: lastPrice,
+          };
+          try {
+            await modifyCartItem(data);
+            toast.success("Thêm vào giỏ hàng thành công.");
+          } catch (error) {
+            setCount(1);
+            toast.error(error.response.data.Errors);
+          }
+        }else{
+          getAttributeById(attributeId)
+          .then((resp) => {
+            const data = {
+              id: attributeId,
+              image: item.main,
+              name: item.name,
+              size: resp.data.size,
+              price: resp.data.price,
+              stock: resp.data.stock,
+              discount: item.discount,
+              quantity: count,
+              lastPrice: lastPrice,
+            };
+            props.addHandler(data);
+            toast.success("Thêm vào giỏ hàng thành công.");
+          })
+          .catch((error) => console.log(error))
+        }
+      } else {
+        toast.warning("Mời chọn size.");
       }
-    } else {
-      toast.warning("Mời chọn size.");
     }
+    
   };
 
   const updateCount = (value) => {
@@ -69,6 +97,7 @@ const ProductDetail = (props) => {
       setCount(value);
     }
   };
+
   return (
     <div>
       {item && (
@@ -155,7 +184,6 @@ const ProductDetail = (props) => {
                     <button
                       onClick={() =>
                         onAddCartHandler(
-                          2,
                           flag,
                           (price * (100 - item.discount)) / 100
                         )

@@ -36,4 +36,7 @@ export const updateOrderWithStatus = (orderId, statusId) =>{
     const url = `/api/admin/order/update-order-with-status?id=${orderId}&status=${statusId}`;
     return Instance.get(url);
 }
-
+export const getEncodeUrl = (encoded) =>{
+    const url = `/api/site/order/base64?encodedUrl=${encoded}`;
+    return Instance.get(url);
+}

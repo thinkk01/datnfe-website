@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import icon from "../static/images/icon_216992.png";
 import { reloadCartItem, getCartItemByAccountId } from "../api/CartApi";
 import { toast } from "react-toastify";
 
 const OutStock = (props) => {
   const [cart, setCart] = useState([]);
-  const history = useHistory();
 
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getCartItemByAccountId(2).then((resp) => {
-      setCart(resp.data);
-    });
+    if (props.user) {
+      getCartItemByAccountId(props.user.id).then((resp) => {
+        setCart(resp.data);
+      });
+    } else {
+      setCart(props.cartItem);
+    }
     props.changeHeaderHandler(5);
   };
 
   const reloadCartItemHandler = () => {
-    reloadCartItem(2)
-      .then((resp) => {
-        toast.success(resp.data);
-        onLoad();
-      })
-      .catch((error) => toast.warning(error.response.data.Errors));
-    
+    if (props.user) {
+      reloadCartItem(2)
+        .then((resp) => {
+          toast.success(resp.data);
+          onLoad();
+        })
+        .catch((error) => toast.warning(error.response.data.Errors));
+    } else {
+      const flag = cart.map((item) =>
+        item.quantity > item.stock
+          ? { ...item, quantity: item.stock}
+          : item
+      );
+      setCart(flag);
+      props.setCartItemHandler(flag);
+    }
   };
 
   return (
@@ -82,7 +94,7 @@ const OutStock = (props) => {
                             <h6 className="card-title bolder mr-3">
                               {item.quantity}
                             </h6>
-                            <i class="fa fa-arrow-right mr-3"></i>
+                            <i className="fa fa-arrow-right mr-3"></i>
                             <h6 className="card-title bolder">{item.stock}</h6>
                           </div>
                         )}

@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { getOrderById, getOrderDetailByOrderId } from "../api/OrderApi";
-import { useParams } from "react-router-dom";
 
 const OrderDetail = (props) => {
   const [orderDetail, setOrderDetail] = useState([]);
   const [order, setOrder] = useState({});
-  const { id } = useParams();
   const [amount, setAmount] = useState();
   const [sale, setSale] = useState();
   const [total, setTotal] = useState();
+
+  const encode = atob(
+    window.location.href.substring(window.location.href.lastIndexOf("/") + 1)
+  );
 
   useEffect(() => {
     onLoad();
   }, []);
 
   const onLoad = () => {
-    getOrderById(id).then((resp) => {
+    getOrderById(encode).then((resp) => {
       setOrder(resp.data);
       setSale(resp.data.voucher ? resp.data.voucher.discount : 0);
       setTotal(resp.data.total);
     });
-    getOrderDetailByOrderId(id).then((resp) => {
+    getOrderDetailByOrderId(encode).then((resp) => {
       setOrderDetail(resp.data);
       const result = resp.data.reduce(
         (price, item) => price + item.sellPrice * item.quantity,
@@ -28,7 +30,6 @@ const OrderDetail = (props) => {
       );
       setAmount(result);
     });
-    props.changeHeaderHandler(4);
   };
 
   return (
@@ -68,8 +69,13 @@ const OrderDetail = (props) => {
           <div className="row mb-5">
             <div className="col offset-8 text ">
               <p>Tạm tính: {amount && amount.toLocaleString()} đ</p>
-              <p>Giảm giá: - {sale ? (amount * sale / 100).toLocaleString() : 0} đ</p>
-              <p className="text-danger">Tổng cộng: {total && total.toLocaleString()} đ</p>
+              <p>
+                Giảm giá: -{" "}
+                {sale ? ((amount * sale) / 100).toLocaleString() : 0} đ
+              </p>
+              <p className="text-danger">
+                Tổng cộng: {total && total.toLocaleString()} đ
+              </p>
             </div>
           </div>
         </div>

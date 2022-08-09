@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { getAllOrder, cancelOrder } from "../api/OrderApi";
 import { getAllOrderStatus } from "../api/OrderStatusApi";
 import { Button, Form } from "react-bootstrap";
@@ -15,12 +15,18 @@ const Order = (props) => {
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
 
+  const history = useHistory();
+
   var rows = new Array(total).fill(0).map((zero, index) => (
     <li
       className={page === index + 1 ? "page-item active" : "page-item"}
       key={index}
     >
-      <button className="page-link" style={{ borderRadius: 50 }} onClick={() => onChangePage(index + 1)}>
+      <button
+        className="page-link"
+        style={{ borderRadius: 50 }}
+        onClick={() => onChangePage(index + 1)}
+      >
         {index + 1}
       </button>
     </li>
@@ -35,18 +41,22 @@ const Order = (props) => {
   }, [page]);
 
   const onLoad = () => {
-    getAllOrder(2, status, page, 8)
-      .then((res) => {
-        setOrder(res.data.content);
-        setTotal(res.data.totalPages);
-      })
-      .catch((error) => console.log(error.response.data.Errors));
+    if (props.user) {
+      getAllOrder(props.user.id, status, page, 8)
+        .then((res) => {
+          setOrder(res.data.content);
+          setTotal(res.data.totalPages);
+        })
+        .catch((error) => console.log(error.response.data.Errors));
 
-    getAllOrderStatus()
-      .then((resp) => setOrderStatus(resp.data))
-      .catch((error) => console.log(error.response.data.Errors));
+      getAllOrderStatus()
+        .then((resp) => setOrderStatus(resp.data))
+        .catch((error) => console.log(error.response.data.Errors));
 
-    props.changeHeaderHandler(4);
+      props.changeHeaderHandler(4);
+    } else {
+      history.push('/error-page');
+    }
   };
 
   const handleClose = () => setShow(false);
@@ -72,7 +82,7 @@ const Order = (props) => {
   const getAllOrderByStatus = (value) => {
     setPage(1);
     setStatus(value);
-    getAllOrder(2, value, page, 8)
+    getAllOrder(props.user.id, value, page, 8)
       .then((res) => {
         setOrder(res.data.content);
         setTotal(res.data.totalPages);
@@ -141,7 +151,7 @@ const Order = (props) => {
                     <tr key={index}>
                       <th scope="row">
                         <h6 className="card-title mt-2 bolder">
-                          <NavLink to={`/order/detail/${item.id}`} exact>
+                          <NavLink to={`/order/detail/${item.encodeUrl}`} exact>
                             #{item.id}
                           </NavLink>
                         </h6>
