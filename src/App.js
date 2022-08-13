@@ -1,12 +1,13 @@
-import { useState } from "react";
 import "./App.css";
 import UserLayOut from "./layout/UserLayOut";
 import AdminLayOut from "./layout/AdminLayOut";
-
+import { BrowserRouter as Router } from "react-router-dom";
 function App() {
   return (
     <div className="container-fluid">
-      <UserLayOut></UserLayOut>
+      <Router>
+        <UserLayOut></UserLayOut>
+      </Router>
     </div>
   );
 }

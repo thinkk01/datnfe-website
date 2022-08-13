@@ -164,10 +164,10 @@ input:focus {
 
 .mini-item {
     display: flex;
-    align-items: center;
-    font-weight: 600;
-    transition: color 0.3s ease 0s;
-    color: var(--main-color);
+    /* align-items: center; */
+    /* font-weight: 600; */
+    /* transition: color 0.3s ease 0s; */
+    /* color: var(--main-color); */
 }
 
 .mini-item.active {
@@ -181,7 +181,7 @@ input:focus {
 }
 
 .mini-ul{
-    margin-left: 30%;
+    margin-right: 20%;
 }
 
 .mini-img{

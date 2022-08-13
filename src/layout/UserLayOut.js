@@ -21,6 +21,7 @@ import Search from "../components/Search";
 import Register from "../authenticate/Register";
 import SignIn from "../authenticate/SignIn";
 import Blog from "../components/blog/Blog";
+import Chat from "../components/chat/Chat";
 
 const UserLayOut = () => {
   const [show, setShow] = useState(false);
@@ -42,7 +43,7 @@ const UserLayOut = () => {
 
   const refresh = (data) => {
     setTemp(data);
-  }
+  };
 
   const userHandler = (user) => {
     setUser(user);
@@ -89,7 +90,9 @@ const UserLayOut = () => {
     if (res) {
       setCartItem(
         cartItem.map((item) =>
-          item.id === data.id ? { ...res, quantity: res.quantity + data.quantity } : item
+          item.id === data.id
+            ? { ...res, quantity: res.quantity + data.quantity }
+            : item
         )
       );
     } else {
@@ -100,18 +103,18 @@ const UserLayOut = () => {
     setCartItem(data);
   };
 
-  const clearHandler = () =>{
+  const clearHandler = () => {
     const res = cartItem.filter((item) => !buy.includes(item.id + ""));
     setCartItem(res);
-  }
+  };
 
   const outStockHandler = (data) => {
     setOutStock(data);
   };
 
-  const setCartItemHandler = (data) =>{
+  const setCartItemHandler = (data) => {
     setCartItem(data);
-  }
+  };
 
   return (
     <div className="col-10 offset-1">
@@ -198,12 +201,13 @@ const UserLayOut = () => {
         <Route path="/sign-in" exact>
           <SignIn userHandler={userHandler}></SignIn>
         </Route>
-        <Route path="/blog" exact>
-          <Blog changeHeaderHandler={changeHeaderHandler}></Blog>
+        <Route path="/chat" exact>
+          <Chat user={user}></Chat>
         </Route>
       </Switch>
       <Footer></Footer>
       <ToastContainer></ToastContainer>
+     
       <div id="scroll">
         <Button variant="primary" onClick={handleShow}>
           Hướng dẫn chọn size

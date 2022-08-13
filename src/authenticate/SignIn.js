@@ -12,21 +12,22 @@ const SignIn = (props) => {
   const signInHandler = (data) => {
     const userFlag = {
       ...data,
-      admin: false
-    }
+      admin: false,
+    };
     signIn(userFlag)
-    .then((res) => {
-      toast.success("Đăng nhập thành công!");
-      localStorage.setItem('token', res.data.accessToken);
-      getMe(res.data.accessToken)
       .then((res) => {
-        props.userHandler(res.data);
-        console.log(res.data);
+        toast.success("Đăng nhập thành công!");
+        localStorage.setItem("token", res.data.accessToken);
+        getMe(res.data.accessToken)
+          .then((res) => {
+            props.userHandler(res.data);
+            localStorage.setItem("username", res.data.username);
+            localStorage.setItem("password", "123456");
+          })
+          .catch((error) => console.log(error));
+        history.push("/");
       })
-      .catch((error) => console.log(error));
-      history.push('/');
-    })
-    .catch((error) => toast.error(error.response.data.Errors));
+      .catch((error) => toast.error(error.response.data.Errors));
   };
 
   const {
@@ -49,58 +50,60 @@ const SignIn = (props) => {
                 <div className="card-body p-5 text-center">
                   <div className="mb-md-5 mt-md-4 pb-5">
                     <h2 className="fw-bold mb-2 text-uppercase">Đăng nhập</h2>
-                   <form   className="needs-validation"
-                    onSubmit={handleSubmit(signInHandler)}>
-                   <div className="form-outline form-white mb-4">
-                      <input
-                        type="text"
-                        id="typeEmailX"
-                        className="form-control form-control-lg"
-                        {...register("username", {
-                              required: true,
-                              pattern: /^\s*\S+.*/,
-                            })}
-                      />
-                      <label className="form-label" htmlFor="typeEmailX">
-                        Tài khoản
-                      </label>
-                      {errors.username && (
-                            <div className="alert alert-danger" role="alert">
-                              Tài khoản không hợp lệ!
-                            </div>
-                          )}
-                    </div>
-                    <div className="form-outline form-white mb-4">
-                      <input
-                        type="password"
-                        id="typePasswordX"
-                        className="form-control form-control-lg"
-                        {...register("password", {
-                              required: true,
-                              pattern: /^\s*\S+.*/,
-                            })}
-                      />
-                      <label className="form-label" htmlFor="typePasswordX">
-                        Mật khẩu
-                      </label>
-                      {errors.password && (
-                            <div className="alert alert-danger" role="alert">
-                              Mật khẩu không hợp lệ!
-                            </div>
-                          )}
-                    </div>
-                    <p className="small mb-5 pb-lg-2">
-                      <a className="text-white-50" href="#!">
-                        Quên mật khẩu?
-                      </a>
-                    </p>
-                    <button
-                      className="btn btn-outline-light btn-lg px-5"
-                      type="submit"
+                    <form
+                      className="needs-validation"
+                      onSubmit={handleSubmit(signInHandler)}
                     >
-                      Đăng nhập
-                    </button>
-                   </form>
+                      <div className="form-outline form-white mb-4">
+                        <input
+                          type="text"
+                          id="typeEmailX"
+                          className="form-control form-control-lg"
+                          {...register("username", {
+                            required: true,
+                            pattern: /^\s*\S+.*/,
+                          })}
+                        />
+                        <label className="form-label" htmlFor="typeEmailX">
+                          Tài khoản
+                        </label>
+                        {errors.username && (
+                          <div className="alert alert-danger" role="alert">
+                            Tài khoản không hợp lệ!
+                          </div>
+                        )}
+                      </div>
+                      <div className="form-outline form-white mb-4">
+                        <input
+                          type="password"
+                          id="typePasswordX"
+                          className="form-control form-control-lg"
+                          {...register("password", {
+                            required: true,
+                            pattern: /^\s*\S+.*/,
+                          })}
+                        />
+                        <label className="form-label" htmlFor="typePasswordX">
+                          Mật khẩu
+                        </label>
+                        {errors.password && (
+                          <div className="alert alert-danger" role="alert">
+                            Mật khẩu không hợp lệ!
+                          </div>
+                        )}
+                      </div>
+                      <p className="small mb-5 pb-lg-2">
+                        <a className="text-white-50" href="#!">
+                          Quên mật khẩu?
+                        </a>
+                      </p>
+                      <button
+                        className="btn btn-outline-light btn-lg px-5"
+                        type="submit"
+                      >
+                        Đăng nhập
+                      </button>
+                    </form>
                     <div className="d-flex justify-content-center text-center mt-4 pt-1">
                       <a href="#!" className="text-white">
                         <i className="fab fa-facebook-f fa-lg" />

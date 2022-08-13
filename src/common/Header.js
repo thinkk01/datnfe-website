@@ -73,18 +73,20 @@ const Header = (props) => {
     props.refresh(false);
     toast.success("Tài khoản đã được đăng xuất.");
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("password");
     props.userHandler(null);
   };
 
   return (
     <div className="mini-card">
       {/* Navigation */}
-      <nav className="navbar navbar-expand-md col-12 mini-nav">
-        <div className="navbar-brand ml-5">
+      <nav className="navbar navbar-expand-md col-12">
+        <div className="navbar-brand ml-1">
           <img src={logo} width={50} height={50} alt="" />
         </div>
         <div className="collapse navbar-collapse">
-          <ul className="navbar-nav mr-auto mt-lg-0 mini-ul">
+          <ul className="navbar-nav mini-ul">
             <li
               className={
                 props.header === 1
@@ -139,9 +141,22 @@ const Header = (props) => {
               }
             >
               <NavLink className="nav-link" to="/blog" exact>
-                Blog
+                Chính sách
               </NavLink>
             </li>
+            {props.user && (
+              <li
+              className={
+                props.header === 5
+                  ? "nav-item mr-2  mini-item active"
+                  : "nav-item mr-2  mini-item"
+              }
+            >
+              <NavLink className="nav-link" to="/chat" exact>
+                Hỏi đáp
+              </NavLink>
+            </li>
+            )}
           </ul>
           <form
             className="form-inline my-2 my-lg-0 mr-3"
