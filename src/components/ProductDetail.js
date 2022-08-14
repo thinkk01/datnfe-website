@@ -1,21 +1,37 @@
 import { React, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import product from "../static/images/cate.jpg";
-import { getProductById } from "../api/ProductApi";
+import { getProductById, relateProduct } from "../api/ProductApi";
 import { useParams } from "react-router-dom";
 import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
 import { getAttribute, getAttributeById } from "../api/AttributeApi";
+import { Button, Form } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+import Table from "react-bootstrap/Table";
 
 const ProductDetail = (props) => {
   const { id } = useParams();
   const [item, setItem] = useState();
-  const [attributes, setAttributes] = useState();
+  const [attributes, setAttributes] = useState([]);
   const [price, setPrice] = useState();
   const [stock, setStock] = useState();
   const [flag, setFlag] = useState();
   const [count, setCount] = useState(1);
   const [status, setStatus] = useState(true);
+  const [relate, setRelate] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const [temp, setTemp] = useState();
+  const handleClose = () => setShow(false);
+  const handleShow = (value) => {
+    getProductById(value)
+      .then((res) => {
+        setTemp(res.data);
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+    setShow(true);
+  };
 
   useEffect(() => {
     onLoad();
@@ -26,14 +42,21 @@ const ProductDetail = (props) => {
       .then((res) => {
         setItem(res.data);
         setAttributes(res.data.attributes);
+        relateProduct(res.data.id, res.data.brandId)
+          .then((resp) => {
+            setRelate(resp.data.content);
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => console.log(error));
+
     getAttribute(id, 39)
       .then((res) => {
         onModify(res.data.price, res.data.stock, res.data.id);
       })
       .catch((error) => console.log(error));
     setStatus(stock > count);
+
     props.changeHeaderHandler(2);
   };
 
@@ -44,12 +67,12 @@ const ProductDetail = (props) => {
     setFlag(flag);
   };
 
-  const onAddCartHandler = async ( attributeId, lastPrice) => {
-    if(!status){
+  const onAddCartHandler = async (attributeId, lastPrice) => {
+    if (!status) {
       toast.warning("Sản phẩm đã hết hàng.");
-    }else{
+    } else {
       if (flag) {
-        if(props.user){
+        if (props.user) {
           const data = {
             accountId: props.user.id,
             attributeId: attributeId,
@@ -63,30 +86,29 @@ const ProductDetail = (props) => {
             setCount(1);
             toast.error(error.response.data.Errors);
           }
-        }else{
+        } else {
           getAttributeById(attributeId)
-          .then((resp) => {
-            const data = {
-              id: attributeId,
-              image: item.main,
-              name: item.name,
-              size: resp.data.size,
-              price: resp.data.price,
-              stock: resp.data.stock,
-              discount: item.discount,
-              quantity: count,
-              lastPrice: lastPrice,
-            };
-            props.addHandler(data);
-            toast.success("Thêm vào giỏ hàng thành công.");
-          })
-          .catch((error) => console.log(error))
+            .then((resp) => {
+              const data = {
+                id: attributeId,
+                image: item.main,
+                name: item.name,
+                size: resp.data.size,
+                price: resp.data.price,
+                stock: resp.data.stock,
+                discount: item.discount,
+                quantity: count,
+                lastPrice: lastPrice,
+              };
+              props.addHandler(data);
+              toast.success("Thêm vào giỏ hàng thành công.");
+            })
+            .catch((error) => console.log(error));
         }
       } else {
         toast.warning("Mời chọn size.");
       }
     }
-    
   };
 
   const updateCount = (value) => {
@@ -246,7 +268,7 @@ const ProductDetail = (props) => {
               </div>
             </div>
           </div>
-          <div className="col-8 offset-2">
+          <div className="col-12">
             <div className="container-fluid padding">
               <div className="row welcome text-center text-dark mb-5 mt-5">
                 <div className="col-12">
@@ -258,91 +280,158 @@ const ProductDetail = (props) => {
             </div>
             <div className="container-fluid padding">
               <div className="row padding">
-                <div className="col-md-3 mb-3">
-                  <div
-                    className="card text-center .bg-light"
-                    data-toggle="tooltip"
-                    title="Alphalava"
-                  >
-                    <div className="card-body">
-                      <img className="card-img-top mb-5" src={product} alt="" />
-                      <h4 className="card-title">Alphalava</h4>
-                      <p className="card-text">3.490.000₫</p>
-                      <NavLink
-                        to={`/product/detail/1`}
-                        exact
-                        className="btn btn-primary"
-                      >
-                        Mua hàng
-                      </NavLink>
+                {relate &&
+                  relate.map((item, index) => (
+                    <div className="col-md-4 mb-3" key={index}>
+                      <div className="card h-100 mini-pro">
+                        <div className="d-flex justify-content-between position-absolute w-100">
+                          <div className="label-new">
+                            <span className="text-white bg-success small d-flex align-items-center px-2 py-1">
+                              <i className="fa fa-star" aria-hidden="true"></i>
+                              <span className="ml-1">New</span>
+                            </span>
+                          </div>
+                        </div>
+                        <NavLink to={`/product-detail/${item.id}`}>
+                          <img
+                            src={require(`../static/images/${item.image}`)}
+                            style={{ width: 150, height: 150 }}
+                            alt="Product"
+                            className="mini-card"
+                          />
+                        </NavLink>
+                        <div className="card-body px-2 pb-2 pt-1">
+                          <div className="d-flex justify-content-between">
+                            <div>
+                              <p className="h4 text-primary mini-card">
+                                {(
+                                  (item.price * (100 - item.discount)) /
+                                  100
+                                ).toLocaleString()}{" "}
+                                đ
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-warning d-flex align-items-center mb-2">
+                            <i className="fa fa-star" aria-hidden="true"></i>
+                            <i className="fa fa-star" aria-hidden="true"></i>
+                            <i className="fa fa-star" aria-hidden="true"></i>
+                            <i className="fa fa-star" aria-hidden="true"></i>
+                            <i className="fa fa-star" aria-hidden="true"></i>
+                          </p>
+                          <p className="mb-0">
+                            <strong>
+                              <NavLink
+                                to={`/product-detail/${item.id}`}
+                                className="text-secondary "
+                              >
+                                {item.name}
+                              </NavLink>
+                            </strong>
+                          </p>
+                          <p className="mb-1">
+                            <small>
+                              <NavLink to="#" className="text-secondary ">
+                                {item.brand}
+                              </NavLink>
+                            </small>
+                          </p>
+                          <div className="d-flex mb-3 justify-content-between">
+                            <div>
+                              <p className="mb-0 small">
+                                <b>Yêu thích: </b> {item.view} lượt
+                              </p>
+                              <p className="mb-0 small">
+                                <b>Giá gốc: {item.price.toLocaleString()} đ</b>
+                              </p>
+                              <p className="mb-0 small text-danger">
+                                <span className="font-weight-bold">
+                                  Tiết kiệm:{" "}
+                                </span>{" "}
+                                {(
+                                  (item.price * item.discount) /
+                                  100
+                                ).toLocaleString()}{" "}
+                                đ ({item.discount}%)
+                              </p>
+                            </div>
+                          </div>
+                          <div className="d-flex justify-content-between">
+                            <div className="col px-0 ">
+                              <button
+                                onClick={() => handleShow(item.id)}
+                                className="btn btn-outline-primary btn-block"
+                              >
+                                So sánh
+                                <i
+                                  className="fa fa-shopping-basket"
+                                  aria-hidden="true"
+                                ></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <div
-                    className="card text-center .bg-light"
-                    data-toggle="tooltip"
-                    title="Alphalava"
-                  >
-                    <div className="card-body">
-                      <img className="card-img-top mb-5" src={product} alt="" />
-                      <h4 className="card-title">Alphalava</h4>
-                      <p className="card-text">3.490.000₫</p>
-                      <NavLink
-                        to={`/product/detail/1`}
-                        exact
-                        className="btn btn-primary"
-                      >
-                        Mua hàng
-                      </NavLink>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <div
-                    className="card text-center .bg-light"
-                    data-toggle="tooltip"
-                    title="Alphalava"
-                  >
-                    <div className="card-body">
-                      <img className="card-img-top mb-5" src={product} alt="" />
-                      <h4 className="card-title">Alphalava</h4>
-                      <p className="card-text">3.490.000₫</p>
-                      <NavLink
-                        to={`/product/detail/1`}
-                        exact
-                        className="btn btn-primary"
-                      >
-                        Mua hàng
-                      </NavLink>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <div
-                    className="card text-center .bg-light"
-                    data-toggle="tooltip"
-                    title="Alphalava"
-                  >
-                    <div className="card-body">
-                      <img className="card-img-top mb-5" src={product} alt="" />
-                      <h4 className="card-title">Alphalava</h4>
-                      <p className="card-text">3.490.000₫</p>
-                      <NavLink
-                        to={`/product/detail/1`}
-                        exact
-                        className="btn btn-primary"
-                      >
-                        Mua hàng
-                      </NavLink>
-                    </div>
-                  </div>
-                </div>
+                  ))}
               </div>
             </div>
           </div>
         </div>
       )}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>So sánh sản phẩm</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th></th>
+                <th>{item && item.name}</th>
+                <th>{temp && temp.name}</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Code</td>
+                <td>{item && item.code}</td>
+                <td>{temp && temp.code}</td>
+              </tr>
+              <tr>
+                <td>Thương hiệu</td>
+                <td>{item && item.brand}</td>
+                <td>{temp && temp.brand}</td>
+              </tr>
+              <tr>
+                <td>Giá</td>
+                <td>{item && item.price.toLocaleString()} đ</td>
+                <td>{temp && temp.price.toLocaleString()} đ</td>
+              </tr>
+              <tr>
+                <td>Giảm giá</td>
+                <td>{item && item.discount} %</td>
+                <td>{temp && temp.discount} %</td>
+              </tr>
+              <tr>
+                <td>Lượt thích</td>
+                <td>{item && item.view}</td>
+                <td>{temp && temp.view}</td>
+              </tr>
+              <tr>
+                <td>Size</td>
+                <td>{item && item.attributes.reduce((result, item) => result + " " + item.size + "", "")}</td>
+                <td>{temp && temp.attributes.reduce((result, item) => result + " " + item.size + "", "")}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

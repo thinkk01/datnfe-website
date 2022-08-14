@@ -202,7 +202,7 @@ const UserLayOut = () => {
           <SignIn userHandler={userHandler}></SignIn>
         </Route>
         <Route path="/chat" exact>
-          <Chat user={user}></Chat>
+          <Chat user={user} changeHeaderHandler={changeHeaderHandler}></Chat>
         </Route>
       </Switch>
       <Footer></Footer>

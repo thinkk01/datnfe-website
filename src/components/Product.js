@@ -1,12 +1,45 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAllProducts,
-  getTotalPage,
-  searchByKeyword,
-} from "../api/ProductApi";
+import { getAllProducts, filterProducts } from "../api/ProductApi";
 import { NavLink } from "react-router-dom";
 import "./sidebar/sidebar.css";
 
+const brands = [
+  {
+    display_name: "PUMA",
+    value: "1",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "REEBOK",
+    value: "2",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "NIKE",
+    value: "3",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "ADIDAS",
+    value: "4",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "FILA",
+    value: "5",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "CONVERSE",
+    value: "6",
+    icon: "bx bx-category-alt",
+  },
+  {
+    display_name: "LI-NING",
+    value: "7",
+    icon: "bx bx-category-alt",
+  },
+];
 const categories = [
   {
     display_name: "Giày nam",
@@ -48,37 +81,55 @@ const categories = [
 const prices = [
   {
     display_name: "Dưới 1 triệu",
-    value: "1",
+    value: "0",
     icon: "bx bx-category-alt",
+    min: 0,
+    max: 1000000,
   },
   {
     display_name: "1.000.000 - 2.000.000",
-    value: "2",
+    value: "1",
     icon: "bx bx-category-alt",
+    min: 1000000,
+    max: 2000000,
   },
   {
     display_name: "2.000.000 - 3.000.000",
-    value: "3",
+    value: "2",
     icon: "bx bx-category-alt",
+    min: 2000000,
+    max: 3000000,
   },
   {
     display_name: "3.000.000 - 4.000.000",
-    value: "4",
+    value: "3",
     icon: "bx bx-category-alt",
+    min: 3000000,
+    max: 4000000,
   },
   {
     display_name: "Trên 4 triệu",
-    value: "5",
+    value: "4",
     icon: "bx bx-category-alt",
+    min: 4000000,
+    max: 10000000,
   },
 ];
+
+const count = 12;
+const defaultBrand = [1, 2, 3, 4, 5, 6, 7];
+const defaultCategory = [1, 2, 3, 4, 5, 6, 7];
 
 const Product = (props) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState({});
-  const [category, setCategory] = useState([1]);
+
+  const [category, setCategory] = useState([]);
+  const [brand, setBrand] = useState([]);
   const [price, setPrice] = useState([]);
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(10000000);
 
   var rows = new Array(total).fill(0).map((zero, index) => (
     <li
@@ -92,20 +143,74 @@ const Product = (props) => {
   ));
 
   useEffect(() => {
-    getAllProducts(page, 9, true).then((response) =>
-      setProducts(response.data.content)
-    );
-    // console.log(category.includes(1))
-    getTotalPage().then((res) => setTotal(res.data));
+    if (category.length === 0 && brand.length === 0 && price.length === 0) {
+      console.log(true);
+      getAllProducts(page, count, true).then((response) => {
+        setProducts(response.data.content);
+        setTotal(response.data.totalPages);
+      });
+    } else {
+      console.log(false);
+      const data = {
+        page: page,
+        count: count,
+        category: category.length > 0 ? category : defaultCategory,
+        brand: brand.length > 0 ? brand : defaultBrand,
+        min: min,
+        max: max,
+      };
+      filterProducts(data).then((resp) => {
+        setProducts(resp.data.content);
+        setTotal(resp.data.totalPages);
+      });
+    }
     props.changeHeaderHandler(2);
-  }, [page]);
+  }, [page, category, brand, price]);
 
   const onChangePage = (page) => {
     setPage(page);
   };
 
-  const clickHandler = (value) =>
-    setCategory((prevState) => [...prevState, value]);
+  const chooseCategoryHandler = (value) => {
+    const index = category.indexOf(value);
+    if (index > -1) {
+      setCategory(category.filter((i) => i !== value));
+    } else {
+      setCategory([...category, value]);
+    }
+    onChangePage(1);
+  };
+
+  const chooseBrandHandler = (value) => {
+    const index = brand.indexOf(value);
+    if (index > -1) {
+      setBrand(brand.filter((i) => i !== value));
+    } else {
+      setBrand([...brand, value]);
+    }
+    onChangePage(1);
+  };
+
+  const choosePriceHandler = (value) => {
+    const index = price.indexOf(value);
+    let temp = [];
+    if (index > -1) {
+      temp = price.filter((i) => i !== value);
+      setPrice(price.filter((i) => i !== value));
+    } else {
+      temp = [...price, value];
+      setPrice([...price, value]);
+    }
+    if (temp.length > 0) {
+      temp.sort();
+      setMin(prices[temp[0]].min);
+      setMax(prices[temp[temp.length - 1]].max);
+    } else {
+      setMin(0);
+      setMax(10000000);
+    }
+    onChangePage(1);
+  };
 
   return (
     <div>
@@ -113,10 +218,37 @@ const Product = (props) => {
         <div className="row">
           <div className="col-2.5">
             <div className="col mini-card">
-              <h4 className="text-danger fw-bolder">Sản phẩm</h4>
+              <h4 className="text-danger fw-bolder">Thương hiệu</h4>
+              <ul className="list-group">
+                {brands.map((item, index) => (
+                  <div
+                    className="sidebar__item"
+                    key={index}
+                    onClick={() => chooseBrandHandler(item.value)}
+                  >
+                    <div
+                      className={
+                        brand.includes(item.value)
+                          ? `sidebar__item-inner active`
+                          : `sidebar__item-inner`
+                      }
+                    >
+                      <i className={item.icon}></i>
+                      <span>{item.display_name}</span>
+                    </div>
+                  </div>
+                ))}
+              </ul>
+            </div>
+            <div className="col mini-card">
+              <h4 className="text-danger fw-bolder">Loại sản phẩm</h4>
               <ul className="list-group">
                 {categories.map((item, index) => (
-                  <div className="sidebar__item" key={index}>
+                  <div
+                    className="sidebar__item"
+                    key={index}
+                    onClick={() => chooseCategoryHandler(item.value)}
+                  >
                     <div
                       className={
                         category.includes(item.value)
@@ -139,10 +271,11 @@ const Product = (props) => {
                   <div className="sidebar__item" key={index}>
                     <div
                       className={
-                        category.includes(item.value)
+                        price.includes(item.value)
                           ? `sidebar__item-inner active`
                           : `sidebar__item-inner`
                       }
+                      onClick={() => choosePriceHandler(item.value)}
                     >
                       <i className={item.icon}></i>
                       <span>{item.display_name}</span>
@@ -154,15 +287,11 @@ const Product = (props) => {
           </div>
           <div className="col">
             <div className="container-fluid padding">
-              {category.length > 0 && (
-                <div className="container-fluid padding">
-                  <div className="row welcome mini-card">
-                    <div className="text-danger">
-                      <h4 className="title">Mới nhất</h4>
-                    </div>
-                  </div>
+              <div className="container-fluid padding">
+                <div className="row welcome mini-card">
+                  <h4 className="title text-danger">Sản phẩm nổi bật</h4>
                 </div>
-              )}
+              </div>
               <div className="row padding">
                 {products &&
                   products.map((item, index) => (

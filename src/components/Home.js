@@ -8,7 +8,7 @@ import second from "../static/images/slider_2_image.jpg";
 import third from "../static/images/slider_4_image.jpg";
 import fourth from "../static/images/slider_5_image.jpg";
 import React, { useState, useEffect } from "react";
-import { getAllProducts, getTotalPage } from "../api/ProductApi";
+import { getAllProducts } from "../api/ProductApi";
 
 const Home = (props) => {
   const [products, setProducts] = useState([]);
@@ -32,10 +32,12 @@ const Home = (props) => {
   ));
 
   useEffect(() => {
-    getAllProducts(page, 9, active).then((response) =>
-      setProducts(response.data.content)
+    getAllProducts(page, 12, active).then((response) =>
+      {
+        setProducts(response.data.content);
+        setTotal(response.data.totalPages);
+      }
     );
-    getTotalPage().then((res) => setTotal(res.data));
     props.changeHeaderHandler(1);
   }, [page]);
 

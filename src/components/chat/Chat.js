@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ChatEngine } from 'react-chat-engine';
 import ChatFeed from './ChatFeed';
 import './chat.css';
 
 const projectID = '20cc05b8-9658-407a-a676-491e100d024a';
 
-const Chat = () => {
+const Chat = (props) => {
+  useEffect(() =>{
+    props.changeHeaderHandler(6);
+  }, []);
 
   return (
     <ChatEngine

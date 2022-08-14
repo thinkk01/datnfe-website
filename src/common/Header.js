@@ -147,7 +147,7 @@ const Header = (props) => {
             {props.user && (
               <li
               className={
-                props.header === 5
+                props.header === 6
                   ? "nav-item mr-2  mini-item active"
                   : "nav-item mr-2  mini-item"
               }
