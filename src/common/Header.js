@@ -82,10 +82,10 @@ const Header = (props) => {
     <div className="mini-card">
       {/* Navigation */}
       <nav className="navbar navbar-expand-md col-12">
-        <div className="navbar-brand ml-1">
+        <div className="navbar-brand ml-1 col">
           <img src={logo} width={50} height={50} alt="" />
         </div>
-        <div className="collapse navbar-collapse">
+        <div className="collapse navbar-collapse col">
           <ul className="navbar-nav mini-ul">
             <li
               className={

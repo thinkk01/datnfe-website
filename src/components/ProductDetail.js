@@ -5,7 +5,8 @@ import { useParams } from "react-router-dom";
 import { modifyCartItem } from "../api/CartApi";
 import { toast } from "react-toastify";
 import { getAttribute, getAttributeById } from "../api/AttributeApi";
-import { Button, Form } from "react-bootstrap";
+import { isEnoughCartItem } from "../api/CartApi";
+import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 
@@ -19,9 +20,9 @@ const ProductDetail = (props) => {
   const [count, setCount] = useState(1);
   const [status, setStatus] = useState(true);
   const [relate, setRelate] = useState([]);
-
   const [show, setShow] = useState(false);
   const [temp, setTemp] = useState();
+
   const handleClose = () => setShow(false);
   const handleShow = (value) => {
     getProductById(value)
@@ -79,13 +80,14 @@ const ProductDetail = (props) => {
             quantity: count,
             lastPrice: lastPrice,
           };
-          try {
-            await modifyCartItem(data);
-            toast.success("Thêm vào giỏ hàng thành công.");
-          } catch (error) {
-            setCount(1);
-            toast.error(error.response.data.Errors);
-          }
+          modifyCartItem(data)
+            .then(() => {
+              toast.success("Thêm vào giỏ hàng thành công.");
+            })
+            .catch((error) => {
+              setCount(1);
+              toast.error(error.response.data.Errors);
+            });
         } else {
           getAttributeById(attributeId)
             .then((resp) => {
@@ -112,12 +114,23 @@ const ProductDetail = (props) => {
   };
 
   const updateCount = (value) => {
-    if (value <= 0 || value > 100) {
-      setCount(1);
-      toast.error("Số lượng không hợp lệ");
-    } else {
+    isEnoughCartItem(flag, value)
+    .then(() => {
       setCount(value);
-    }
+    })
+    .catch((error) => {
+      toast.warning(error.response.data.Errors);
+      setCount(1);
+    });
+  };
+  const addCount = (value) => {
+    isEnoughCartItem(flag, value)
+    .then(() => {
+      setCount(value);
+    })
+    .catch((error) => {
+      toast.warning(error.response.data.Errors);
+    });
   };
 
   return (
@@ -183,7 +196,7 @@ const ProductDetail = (props) => {
                     <div className="mt-5">
                       <button
                         className="btn btn-outline-dark"
-                        onClick={() => updateCount(count + 1)}
+                        onClick={() => addCount(count + 1)}
                       >
                         +
                       </button>
@@ -197,7 +210,8 @@ const ProductDetail = (props) => {
                       />
                       <button
                         className="btn btn-outline-dark"
-                        onClick={() => updateCount(count - 1)}
+                        onClick={() => addCount(count - 1)}
+                        disabled={count == 1}
                       >
                         -
                       </button>
@@ -393,7 +407,7 @@ const ProductDetail = (props) => {
               </tr>
             </thead>
             <tbody>
-            <tr>
+              <tr>
                 <td>Code</td>
                 <td>{item && item.code}</td>
                 <td>{temp && temp.code}</td>
@@ -420,8 +434,20 @@ const ProductDetail = (props) => {
               </tr>
               <tr>
                 <td>Size</td>
-                <td>{item && item.attributes.reduce((result, item) => result + " " + item.size + "", "")}</td>
-                <td>{temp && temp.attributes.reduce((result, item) => result + " " + item.size + "", "")}</td>
+                <td>
+                  {item &&
+                    item.attributes.reduce(
+                      (result, item) => result + " " + item.size + "",
+                      ""
+                    )}
+                </td>
+                <td>
+                  {temp &&
+                    temp.attributes.reduce(
+                      (result, item) => result + " " + item.size + "",
+                      ""
+                    )}
+                </td>
               </tr>
             </tbody>
           </Table>

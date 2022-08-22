@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import {
   getCartItemByAccountId,
   modifyCartItem,
@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 const Cart = (props) => {
   const [cart, setCart] = useState([]);
   const [amount, setAmount] = useState();
-
   const history = useHistory();
 
   useEffect(() => {
@@ -44,43 +43,103 @@ const Cart = (props) => {
     props.changeHeaderHandler(3);
   };
 
-  const modifyCartItemHandler = async (attr, quantity) => {
-    if (props.user) {
-      const data = {
-        accountId: props.user.id,
-        attributeId: attr,
-        quantity: quantity,
-      };
-      try {
-        await modifyCartItem(data).then((res) => onLoad());
-      } catch (error) {
-        toast.warning(error.response.data.Errors);
-      }
+  const modifyCartItemHandler = (attr, quantity) => {
+    if (quantity < 1) {
+      toast.warning("Số lượng không hợp lệ.");
     } else {
-      const res = cart.map((item) =>
-        item.id === attr
-          ? { ...item, quantity: item.quantity + quantity }
-          : item
-      );
-      const flag = res.filter((item) => item.quantity > 0);
+      if (props.user) {
+        const data = {
+          accountId: props.user.id,
+          attributeId: attr,
+          quantity: quantity,
+        };
 
-      setCart(flag);
-      props.cartHandler(flag);
+        modifyCartItem(data)
+          .then(() => onLoad())
+          .catch((error) => toast.warning(error.response.data.Errors));
+      } else {
+        isEnoughCartItem(attr, quantity)
+          .then(() => {
+            const res = cart.map((item) =>
+              item.id === attr ? { ...item, quantity: quantity } : item
+            );
+            const result = res.reduce(
+              (price, item) =>
+                price + (item.price * item.quantity * (100 - item.discount)) / 100,
+              0
+            );
+            const flag = res.filter((item) => item.quantity > 0);
+            setCart(flag);
+            props.cartHandler(flag);
+            setAmount(result);
+          })
+          .catch((error) => {
+            const res = cart.map((item) =>
+              item.id === attr ? { ...item, quantity: 1 } : item
+            );
+            const result = res.reduce(
+              (price, item) =>
+                price + (item.price * item.quantity * (100 - item.discount)) / 100,
+              0
+            );
+            const flag = res.filter((item) => item.quantity > 0);
+            setCart(flag);
+            props.cartHandler(flag);
+            setAmount(result);
+            toast.warning(error.response.data.Errors);
+          });
+      }
     }
   };
 
-  const removeCartItemHandler = async (attr, quantity) => {
+  const addCartItemHandler = (attr, quantity) => {
+    if (quantity < 1) {
+      toast.warning("Số lượng không hợp lệ.");
+    } else {
+      if (props.user) {
+        const data = {
+          accountId: props.user.id,
+          attributeId: attr,
+          quantity: quantity,
+        };
+
+        modifyCartItem(data)
+          .then(() => onLoad())
+          .catch((error) => toast.warning(error.response.data.Errors));
+      } else {
+        isEnoughCartItem(attr, quantity)
+          .then(() => {
+            const res = cart.map((item) =>
+              item.id === attr ? { ...item, quantity: quantity } : item
+            );
+            const result = res.reduce(
+              (price, item) =>
+                price + (item.price * item.quantity * (100 - item.discount)) / 100,
+              0
+            );
+            const flag = res.filter((item) => item.quantity > 0);
+            setCart(flag);
+            props.cartHandler(flag);
+            setAmount(result);
+          })
+          .catch((error) => {            
+            toast.warning(error.response.data.Errors);
+          });
+      }
+    }
+  };
+
+  const removeCartItemHandler = (attr, quantity) => {
     if (props.user) {
       const data = {
         accountId: props.user.id,
         attributeId: attr,
         quantity: quantity,
       };
-      try {
-        await removeCartItem(data).then(() => onLoad());
-      } catch (error) {
-        toast.warning(error.response.data.Errors);
-      }
+
+      removeCartItem(data)
+        .then(() => onLoad())
+        .catch((error) => toast.warning(error.response.data.Errors));
     } else {
       const res = cart.filter((item) => item.id !== attr);
       setCart(res);
@@ -184,7 +243,9 @@ const Cart = (props) => {
                       <div className="mt-5">
                         <button
                           className="btn btn-outline-dark"
-                          onClick={() => modifyCartItemHandler(item.id, 1)}
+                          onClick={() =>
+                            addCartItemHandler(item.id, item.quantity + 1)
+                          }
                         >
                           +
                         </button>
@@ -194,16 +255,16 @@ const Cart = (props) => {
                           style={{ width: "40px" }}
                           value={item.quantity}
                           onChange={(e) =>
-                            modifyCartItemHandler(
-                              item.id,
-                              e.target.value - item.quantity
-                            )
+                            modifyCartItemHandler(item.id, e.target.value)
                           }
                           min={1}
                         />
                         <button
                           className="btn btn-outline-dark"
-                          onClick={() => modifyCartItemHandler(item.id, -1)}
+                          onClick={() =>
+                            modifyCartItemHandler(item.id, item.quantity - 1)
+                          }
+                          disabled={item.quantity == 1}
                         >
                           -
                         </button>
@@ -246,7 +307,7 @@ const Cart = (props) => {
             </button>
             <div className="row ml-5" style={{ paddingLeft: 700 }}>
               <h4 className="mr-5">Tổng tiền: </h4>
-              <h4>{amount?.toLocaleString()}₫</h4>
+              <h4>{amount && amount.toLocaleString()}₫</h4>
             </div>
           </div>
         </div>
