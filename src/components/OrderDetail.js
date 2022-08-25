@@ -34,12 +34,12 @@ const OrderDetail = (props) => {
 
   return (
     <div className="container-fluid row padding mb-5">
-      <div className="col-8 welcome mb-5 mt-5">
-        <div className="col-10 offset-1 text ">
-          <p className="display-4 text-danger" style={{ fontSize: "34px" }}>
+    <div className="col-10 offset-1 text ">
+          <p className="display-4 text-primary" style={{ fontSize: "34px",fontWeight: "bolder"  }}>
             Đơn hàng #{order.id}
           </p>
         </div>
+      <div className="col-8 welcome mb-5 mt-5">
         <div className="col-10 offset-1 mb-5">
           <table className="table table-striped table-bordered">
             <thead>
@@ -78,9 +78,47 @@ const OrderDetail = (props) => {
               </p>
             </div>
           </div>
+          <div className="row mb-5">
+            <div className="col text ">
+              <p
+                className="display-4 text-primary"
+                style={{ fontSize: "24px" }}
+              >
+                Trạng thái thanh toán
+              </p>
+              <p className="text-danger" style={{ fontWeight: "bolder" }}>
+                {order && order.isPending ? "Đã thanh toán" : "Chưa thanh toán"}
+              </p>
+            </div>
+            <div className="col text ">
+              <p
+                className="display-4 text-primary"
+                style={{ fontSize: "24px" }}
+              >
+                Trạng thái đơn hàng
+              </p>
+              <p className="text-danger" style={{ fontWeight: "bolder" }}>
+                {order.orderStatus && order.orderStatus.name}
+              </p>
+            </div>
+           
+          </div>
+          <div className="row">
+             <div className="col text ">
+              <p
+                className="display-4 text-primary"
+                style={{ fontSize: "24px" }}
+              >
+                Phương thức giao hàng
+              </p>
+              <p className="text-danger" style={{ fontWeight: "bolder" }}>
+                {order && order.payment}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="col-4 welcome mb-5 mt-5">
+      <div className="col-4 mb-5 mt-5">
         <div className="col-10 offset-1 text ">
           <p className="display-4 text-danger" style={{ fontSize: "24px" }}>
             Thông tin mua hàng
@@ -97,6 +135,7 @@ const OrderDetail = (props) => {
           <p>DC: {order.address}</p>
         </div>
       </div>
+      
     </div>
   );
 };

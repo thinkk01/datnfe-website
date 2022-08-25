@@ -5,7 +5,7 @@ import { getAllOrderStatus } from "../api/OrderStatusApi";
 import { Button, Form } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
-
+import Alert from "react-bootstrap/Alert";
 const Order = (props) => {
   const [order, setOrder] = useState([]);
   const [orderStatus, setOrderStatus] = useState([]);
@@ -14,9 +14,23 @@ const Order = (props) => {
   const [obj, setObj] = useState({});
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
-
+  const [showFouth, setShowFouth] = useState(false);
+  const [description, setDescription] = useState(null);
+  const [reason, setReason] = useState(null);
   const history = useHistory();
 
+  const handleCloseFouth = () => {
+    setShowFouth(false);
+    setReason(null);
+    setDescription(null);
+  };
+  const handleShowFouth = (orderId, statusId) => {
+    setShowFouth(true);
+    setObj({
+      orderId: orderId,
+      statusId: statusId,
+    });
+  };
   var rows = new Array(total).fill(0).map((zero, index) => (
     <li
       className={page === index + 1 ? "page-item active" : "page-item"}
@@ -36,6 +50,40 @@ const Order = (props) => {
     setPage(page);
   };
 
+  const descriptionHandler = (value) => {
+    console.log(value);
+    setDescription(value);
+  };
+
+  const confirmUpdateCancel = () => {
+    const data = {
+      id: obj.orderId,
+      description: `${reason} - ${description}`,
+    };
+
+    cancelOrder(data)
+      .then(() => {
+        toast.success("Cập nhật thành công.");
+        setStatus(obj.statusId);
+        setPage(1);
+        getAllOrderByStatus(obj.statusId)
+          .then((res) => {
+            setOrder(res.data.content);
+            setTotal(res.data.totalPages);
+          })
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => toast.error(error.response.data.Errors));
+
+    setReason(null);
+    setDescription(null);
+    setShowFouth(false);
+  };
+
+  const reasonHandler = (value) => {
+    console.log(value);
+    setReason(value);
+  };
   useEffect(() => {
     onLoad();
   }, [page]);
@@ -55,30 +103,10 @@ const Order = (props) => {
 
       props.changeHeaderHandler(4);
     } else {
-      history.push('/error-page');
+      history.push("/error-page");
     }
   };
 
-  const handleClose = () => setShow(false);
-  const handleShow = (orderId) => {
-    setShow(true);
-    setObj({
-      orderId: orderId,
-    });
-  };
-
-  const cancelHandler = (id) => {
-    handleShow(id);
-  };
-  const confirmCancelHandler = () => {
-    cancelOrder(obj.orderId)
-      .then(() => {
-        onLoad();
-        toast.success("Hủy đơn hàng thành công.");
-      })
-      .catch((error) => toast.error(error.response.data.Errors));
-    setShow(false);
-  };
   const getAllOrderByStatus = (value) => {
     setPage(1);
     setStatus(value);
@@ -185,7 +213,7 @@ const Order = (props) => {
                       <td>
                         <button
                           className="btn btn-light"
-                          onClick={() => cancelHandler(item.id)}
+                          onClick={() => handleShowFouth(item.id, 5)}
                         >
                           <i
                             className="fa fa-ban text-danger"
@@ -224,22 +252,53 @@ const Order = (props) => {
           </div>
         </div>
       </div>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={showFouth} onHide={handleCloseFouth}>
         <Modal.Header closeButton>
-          <Modal.Title>Xác nhận hủy đơn hàng?</Modal.Title>
+          <Modal.Title style={{ textAlign: "center" }}>
+            Xác nhận cập nhật?
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Modal.Footer>
-              <Button variant="danger" onClick={confirmCancelHandler}>
-                Xác nhận
-              </Button>
-              <Button variant="primary" onClick={handleClose}>
-                Đóng
-              </Button>
-            </Modal.Footer>
-          </Form>
+          <Alert variant="danger">
+            <Alert.Heading>Hủy đơn hàng</Alert.Heading>
+            <hr />
+            <Form.Label style={{ marginRight: 30, marginBottom: 10 }}>
+              Lí do hủy đơn
+            </Form.Label>
+            <Form.Select
+              style={{ height: 40, width: 420, marginBottom: 20 }}
+              onChange={(e) => reasonHandler(e.target.value)}
+            >
+              <option value={null}></option>
+              <option value="Đặt trùng">Đặt trùng</option>
+              <option value="Thêm bớt sản phẩm">Thêm bớt sản phẩm</option>
+              <option value="Gojek">Không còn nhu cầu</option>
+              <option value="AhaMove">Lí do khác</option>
+            </Form.Select>
+            <Form>
+              <Form.Label style={{ marginRight: 30, marginBottom: 10 }}>
+                Mô tả
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                onChange={(e) => descriptionHandler(e.target.value)}
+              />
+            </Form>
+          </Alert>
         </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger"
+            onClick={confirmUpdateCancel}
+            disabled={!reason || !description}
+          >
+            Xác nhận
+          </Button>
+          <Button variant="primary" onClick={handleCloseFouth}>
+            Đóng
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

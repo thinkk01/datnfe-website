@@ -114,23 +114,30 @@ const ProductDetail = (props) => {
   };
 
   const updateCount = (value) => {
-    isEnoughCartItem(flag, value)
-    .then(() => {
-      setCount(value);
-    })
-    .catch((error) => {
-      toast.warning(error.response.data.Errors);
-      setCount(1);
-    });
+    console.log(value);
+    if(value >= 1){
+      isEnoughCartItem(flag, value)
+      .then(() => {
+        setCount(value);
+      })
+      .catch((error) => {
+        toast.warning(error.response.data.Errors);
+        setCount(1);
+      });
+    }else{
+      toast.warning("Số lượng không hợp lệ");
+    }
+   
   };
+
   const addCount = (value) => {
     isEnoughCartItem(flag, value)
-    .then(() => {
-      setCount(value);
-    })
-    .catch((error) => {
-      toast.warning(error.response.data.Errors);
-    });
+      .then(() => {
+        setCount(value);
+      })
+      .catch((error) => {
+        toast.warning(error.response.data.Errors);
+      });
   };
 
   return (
