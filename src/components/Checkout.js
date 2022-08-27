@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
 import { getVoucherByCode } from "../api/VoucherApi";
 import Spinner from "./spinner/Spinner";
-import { Button, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
 const Checkout = (props) => {
@@ -43,7 +43,7 @@ const Checkout = (props) => {
   useEffect(() => {
     onLoad();
   }, []);
-
+ 
   const textHandler = (value) => {
     setText(value);
   };

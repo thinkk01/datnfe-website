@@ -22,6 +22,8 @@ import Register from "../authenticate/Register";
 import SignIn from "../authenticate/SignIn";
 import Blog from "../components/blog/Blog";
 import Chat from "../components/chat/Chat";
+import ForgotPassword from "../authenticate/ForgotPassword";
+import Profile from "../authenticate/Profile";
 
 const UserLayOut = () => {
   const [show, setShow] = useState(false);
@@ -198,11 +200,20 @@ const UserLayOut = () => {
         <Route path="/register" exact>
           <Register></Register>
         </Route>
+        <Route path="/blog" exact>
+          <Blog changeHeaderHandler={changeHeaderHandler}></Blog>
+        </Route>
         <Route path="/sign-in" exact>
           <SignIn userHandler={userHandler}></SignIn>
         </Route>
         <Route path="/chat" exact>
           <Chat user={user} changeHeaderHandler={changeHeaderHandler}></Chat>
+        </Route>
+        <Route path="/forgot-password" exact>
+          <ForgotPassword></ForgotPassword>
+        </Route>
+        <Route path="/profile" exact>
+          <Profile user={user} refresh={refresh} userHandler={userHandler}></Profile>
         </Route>
       </Switch>
       <Footer></Footer>

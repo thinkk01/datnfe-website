@@ -6,6 +6,7 @@ import { Button, Form } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 import Alert from "react-bootstrap/Alert";
+
 const Order = (props) => {
   const [order, setOrder] = useState([]);
   const [orderStatus, setOrderStatus] = useState([]);
@@ -101,7 +102,7 @@ const Order = (props) => {
         .then((resp) => setOrderStatus(resp.data))
         .catch((error) => console.log(error.response.data.Errors));
 
-      props.changeHeaderHandler(4);
+      props.changeHeaderHandler(5);
     } else {
       history.push("/error-page");
     }

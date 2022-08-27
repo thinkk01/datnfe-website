@@ -60,9 +60,11 @@ const ProductDetail = (props) => {
       .catch((error) => console.log(error));
     setStatus(stock > count);
 
-    getCartItemByAccountId(props.user.id).then((resp) => {
-      setCart(resp.data.map((item) => ({ ...item, checked: false })));
-    });
+    if(props.user){
+      getCartItemByAccountId(props.user.id).then((resp) => {
+        setCart(resp.data.map((item) => ({ ...item, checked: false })));
+      });
+    }
 
     props.changeHeaderHandler(2);
   };

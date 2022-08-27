@@ -88,9 +88,7 @@ const Home = (props) => {
       </div>
       <div className="container-fluid padding">
         <div className="row welcome mini-card">
-          <div className="text-danger">
-            <h4 className="title">Mới nhất</h4>
-          </div>
+        <h4 className="title text-primary" >Mới nhất</h4>
         </div>
       </div>
       <div className="col-11 container-fluid card">

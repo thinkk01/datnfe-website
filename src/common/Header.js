@@ -123,7 +123,7 @@ const Header = (props) => {
             {props.user && (
               <li
                 className={
-                  props.header === 4
+                  props.header === 5
                     ? "nav-item mr-2  mini-item active"
                     : "nav-item mr-2  mini-item"
                 }
@@ -135,7 +135,7 @@ const Header = (props) => {
             )}
             <li
               className={
-                props.header === 5
+                props.header === 4
                   ? "nav-item mr-2  mini-item active"
                   : "nav-item mr-2  mini-item"
               }

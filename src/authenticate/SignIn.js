@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import "./signin.css";
 import { signIn } from "../api/AuthenticateApi";
@@ -6,9 +6,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { getMe } from "../api/AccountApi";
 
+
 const SignIn = (props) => {
   const history = useHistory();
-
   const signInHandler = (data) => {
     const userFlag = {
       ...data,
@@ -93,7 +93,7 @@ const SignIn = (props) => {
                         )}
                       </div>
                       <p className="small mb-5 pb-lg-2">
-                        <a className="text-white-50" href="#!">
+                        <a className="text-black-50" href="/forgot-password">
                           Quên mật khẩu?
                         </a>
                       </p>
@@ -133,7 +133,7 @@ const SignIn = (props) => {
             </div>
           </div>
         </div>
-      </section>
+      </section>    
     </div>
   );
 };
