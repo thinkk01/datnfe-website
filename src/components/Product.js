@@ -144,7 +144,6 @@ const Product = (props) => {
 
   useEffect(() => {
     if (category.length === 0 && brand.length === 0 && price.length === 0) {
-      console.log(true);
       getAllProducts(page, count, true).then((response) => {
         setProducts(response.data.content);
         setTotal(response.data.totalPages);

@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 
 const Cart = (props) => {
   const [cart, setCart] = useState([]);
-  const [amount, setAmount] = useState();
   const history = useHistory();
 
   useEffect(() => {
@@ -22,22 +21,10 @@ const Cart = (props) => {
       getCartItemByAccountId(props.user.id).then((resp) => {
         setCart(resp.data.map((item) => ({ ...item, checked: false })));
         props.outStockHandler(resp.data);
-        const result = resp.data.reduce(
-          (price, item) =>
-            price + (item.price * item.quantity * (100 - item.discount)) / 100,
-          0
-        );
-        setAmount(result);
       });
     } else {
       setCart(props.cartItem.map((item) => ({ ...item, checked: false })));
       props.outStockHandler(props.cartItem);
-      const result = props.cartItem.reduce(
-        (price, item) =>
-          price + (item.price * item.quantity * (100 - item.discount)) / 100,
-        0
-      );
-      setAmount(result);
     }
     props.clearBuyHandler();
     props.changeHeaderHandler(3);
@@ -63,29 +50,17 @@ const Cart = (props) => {
             const res = cart.map((item) =>
               item.id === attr ? { ...item, quantity: quantity } : item
             );
-            const result = res.reduce(
-              (price, item) =>
-                price + (item.price * item.quantity * (100 - item.discount)) / 100,
-              0
-            );
             const flag = res.filter((item) => item.quantity > 0);
             setCart(flag);
             props.cartHandler(flag);
-            setAmount(result);
           })
           .catch((error) => {
             const res = cart.map((item) =>
               item.id === attr ? { ...item, quantity: 1 } : item
             );
-            const result = res.reduce(
-              (price, item) =>
-                price + (item.price * item.quantity * (100 - item.discount)) / 100,
-              0
-            );
             const flag = res.filter((item) => item.quantity > 0);
             setCart(flag);
             props.cartHandler(flag);
-            setAmount(result);
             toast.warning(error.response.data.Errors);
           });
       }
@@ -112,17 +87,11 @@ const Cart = (props) => {
             const res = cart.map((item) =>
               item.id === attr ? { ...item, quantity: quantity } : item
             );
-            const result = res.reduce(
-              (price, item) =>
-                price + (item.price * item.quantity * (100 - item.discount)) / 100,
-              0
-            );
             const flag = res.filter((item) => item.quantity > 0);
             setCart(flag);
             props.cartHandler(flag);
-            setAmount(result);
           })
-          .catch((error) => {            
+          .catch((error) => {
             toast.warning(error.response.data.Errors);
           });
       }
@@ -182,6 +151,7 @@ const Cart = (props) => {
       props.buyHandler(id);
     }
   };
+
 
   return (
     <div className="col-12">
@@ -282,7 +252,7 @@ const Cart = (props) => {
                     <td>
                       <button
                         className="border-0 pl-4"
-                        // style={{ backgroundColor: "white" }}
+                        style={{ backgroundColor: "white" }}
                         onClick={() =>
                           removeCartItemHandler(item.id, item.quantity)
                         }
@@ -305,10 +275,6 @@ const Cart = (props) => {
             >
               Mua hàng
             </button>
-            <div className="row ml-5" style={{ paddingLeft: 700 }}>
-              <h4 className="mr-5">Tổng tiền: </h4>
-              <h4>{amount && amount.toLocaleString()}₫</h4>
-            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { NavLink, useHistory } from "react-router-dom";
 import { getVoucherByCode } from "../api/VoucherApi";
 import Spinner from "./spinner/Spinner";
+import { Button, Form } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
 
 const Checkout = (props) => {
   const [amount, setAmount] = useState();
@@ -19,13 +21,23 @@ const Checkout = (props) => {
   const [sub, setSub] = useState();
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("Thanh toán khi giao hàng(COD)");
+  const [showFirst, setShowFirst] = useState(false);
+  const [obj, setObj] = useState({});
 
+  const handleCloseFirst = () => {
+    setShowFirst(false);
+  };
+  const handleShowFirst = (data) => {
+    setObj(data);
+    setShowFirst(true);
+  };
   const history = useHistory();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm();
 
   useEffect(() => {
@@ -50,6 +62,13 @@ const Checkout = (props) => {
           );
         setAmount(result);
       });
+      const flag = {
+        address: props.user.address,
+        name: props.user.fullName,
+        phone: props.user.phone,
+        email: props.user.email
+      }
+      reset(flag);
     } else {
       setCart(
         props.cartItem.filter((item) => props.buy.includes(item.id + ""))
@@ -64,6 +83,7 @@ const Checkout = (props) => {
       setAmount(result);
     }
     props.changeHeaderHandler(3);
+    props.user ? console.log(props.user) : console.log('');
   };
 
   const voucherHandler = (value) => {
@@ -273,7 +293,7 @@ const Checkout = (props) => {
           <h4 className="mb-3">Địa chỉ nhận hàng</h4>
           <form
             className="needs-validation"
-            onSubmit={handleSubmit(onSubmitHandler)}
+            onSubmit={handleSubmit(handleShowFirst)}
           >
             <div className="row g-3">
               <div className="col-sm-6">
@@ -480,6 +500,26 @@ const Checkout = (props) => {
           </form>
         </div>
       </div>
+      <Modal show={showFirst} onHide={handleCloseFirst}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ textAlign: "center" }}>
+            Bạn đã chắc chắn chưa?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>         
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger"
+            onClick={() => onSubmitHandler(obj)}
+          >
+            Xác nhận
+          </Button>
+          <Button variant="primary" onClick={handleCloseFirst}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

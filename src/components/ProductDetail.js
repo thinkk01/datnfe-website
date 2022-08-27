@@ -9,6 +9,7 @@ import { isEnoughCartItem } from "../api/CartApi";
 import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
+import { getCartItemByAccountId } from "../api/CartApi";
 
 const ProductDetail = (props) => {
   const { id } = useParams();
@@ -22,6 +23,7 @@ const ProductDetail = (props) => {
   const [relate, setRelate] = useState([]);
   const [show, setShow] = useState(false);
   const [temp, setTemp] = useState();
+  const [cart, setCart] = useState();
 
   const handleClose = () => setShow(false);
   const handleShow = (value) => {
@@ -58,6 +60,10 @@ const ProductDetail = (props) => {
       .catch((error) => console.log(error));
     setStatus(stock > count);
 
+    getCartItemByAccountId(props.user.id).then((resp) => {
+      setCart(resp.data.map((item) => ({ ...item, checked: false })));
+    });
+
     props.changeHeaderHandler(2);
   };
 
@@ -74,12 +80,16 @@ const ProductDetail = (props) => {
     } else {
       if (flag) {
         if (props.user) {
+          const flagId = cart.map((item) => item.id);
+          const obj = cart.filter((i) => i.id == attributeId)[0];
+          console.log(obj);
           const data = {
             accountId: props.user.id,
             attributeId: attributeId,
-            quantity: count,
+            quantity: flagId.includes(attributeId) ? (count + obj.quantity) : count,
             lastPrice: lastPrice,
           };
+          console.log(data);
           modifyCartItem(data)
             .then(() => {
               toast.success("Thêm vào giỏ hàng thành công.");
