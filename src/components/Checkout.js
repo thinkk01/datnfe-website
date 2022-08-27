@@ -132,7 +132,7 @@ const Checkout = (props) => {
           setTimeout(() => {
             setLoading(false);
           }, 10000);
-
+          
           const order = {
             fullname: data.name,
             phone: data.phone,
@@ -164,6 +164,7 @@ const Checkout = (props) => {
             .catch(() => history.push("/out-of-stock"));
         })
         .catch((error) => {
+          handleCloseFirst();
           toast.error(error.response.data.Errors);
           refreshVoucherHandler();
         });
