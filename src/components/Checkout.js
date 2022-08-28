@@ -173,7 +173,7 @@ const Checkout = (props) => {
 
       setTimeout(() => {
         setLoading(false);
-      }, 10000);
+      }, 14000);
 
       const order = {
         fullname: data.name,

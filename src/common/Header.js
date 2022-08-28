@@ -176,7 +176,7 @@ const Header = (props) => {
               ></i>
             </button>
           </form>
-          {props.user && (
+          {/* {props.user && (
             <Dropdown
               customToggle={() => renderUserToggle(curr_user)}
               contentData={user_menu}
@@ -189,7 +189,16 @@ const Header = (props) => {
               contentData={not_menu}
               renderItems={(item, index) => renderUserMenu(item, index)}
             />
-          )}
+          )} */}
+          {props.user ?  <Dropdown
+              customToggle={() => renderUserToggle(curr_user)}
+              contentData={user_menu}
+              renderItems={(item, index) => renderUserMenu(item, index)}
+            /> :  <Dropdown
+              customToggle={() => renderUserToggle(curr_user)}
+              contentData={not_menu}
+              renderItems={(item, index) => renderUserMenu(item, index)}
+            />}
         </div>
       </nav>
     </div>

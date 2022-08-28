@@ -222,6 +222,7 @@ const Cart = (props) => {
                         <input
                           type="number"
                           name="quantity"
+                          className="text-center"
                           style={{ width: "40px" }}
                           value={item.quantity}
                           onChange={(e) =>

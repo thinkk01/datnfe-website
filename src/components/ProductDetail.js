@@ -221,6 +221,7 @@ const ProductDetail = (props) => {
                         +
                       </button>
                       <input
+                      className="text-center"
                         type="number"
                         name="quantity"
                         style={{ width: "60px" }}
