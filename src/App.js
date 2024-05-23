@@ -4,7 +4,7 @@ import AdminLayOut from "./layout/AdminLayOut";
 import { BrowserRouter as Router } from "react-router-dom";
 function App() {
   return (
-    <div className="container-fluid">
+    <div className="container-fluid position-relative">
       <Router>
         <UserLayOut></UserLayOut>
       </Router>

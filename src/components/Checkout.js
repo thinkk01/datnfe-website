@@ -37,18 +37,18 @@ const Checkout = (props) => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm();
 
   useEffect(() => {
     onLoad();
   }, []);
- 
+
   const textHandler = (value) => {
     setText(value);
   };
   const onLoad = () => {
-    getAllProvince().then((resp) => setInfo(resp.data));
+    getAllProvince().then((resp) => setInfo(resp.data.results));
     if (props.user) {
       getCartItemByAccountId(props.user.id).then((resp) => {
         setCart(resp.data.filter((item) => props.buy.includes(item.id + "")));
@@ -66,8 +66,8 @@ const Checkout = (props) => {
         address: props.user.address,
         name: props.user.fullName,
         phone: props.user.phone,
-        email: props.user.email
-      }
+        email: props.user.email,
+      };
       reset(flag);
     } else {
       setCart(
@@ -83,7 +83,7 @@ const Checkout = (props) => {
       setAmount(result);
     }
     props.changeHeaderHandler(3);
-    props.user ? console.log(props.user) : console.log('');
+    props.user ? console.log(props.user) : console.log("");
   };
 
   const voucherHandler = (value) => {
@@ -132,7 +132,7 @@ const Checkout = (props) => {
           setTimeout(() => {
             setLoading(false);
           }, 10000);
-          
+
           const order = {
             fullname: data.name,
             phone: data.phone,
@@ -311,7 +311,7 @@ const Checkout = (props) => {
                   {info &&
                     info.map((item, index) => (
                       <option key={index} value={item.id}>
-                        {item.name}
+                        {item.province_name}
                       </option>
                     ))}
                 </select>
@@ -507,13 +507,9 @@ const Checkout = (props) => {
             Bạn đã chắc chắn chưa?
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>         
-        </Modal.Body>
+        <Modal.Body></Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="danger"
-            onClick={() => onSubmitHandler(obj)}
-          >
+          <Button variant="danger" onClick={() => onSubmitHandler(obj)}>
             Xác nhận
           </Button>
           <Button variant="primary" onClick={handleCloseFirst}>

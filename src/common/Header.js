@@ -1,6 +1,6 @@
 import React from "react";
 import "../static/css/style.css";
-import logo from "../static/images/logo-sneaker1.jpg";
+import logo from "../static/images/logo/logo-dark-removebg-preview.png";
 import { NavLink, useHistory } from "react-router-dom";
 import user_image from "../static/images/default.png";
 import Dropdown from "../admin/dropdown/Dropdown";
@@ -81,11 +81,11 @@ const Header = (props) => {
   return (
     <div className="mini-card">
       {/* Navigation */}
-      <nav className="navbar navbar-expand-md col-12">
+      <nav className="navbar navbar-expand-md col-12 z-100">
         <div className="navbar-brand ml-1 col">
-          <img src={logo} width={50} height={50} alt="" />
+          <img src={logo} width={80} height={80} alt="" />
         </div>
-        <div className="collapse navbar-collapse col">
+        <div className="collapse navbar-collapse col justify-between">
           <ul className="navbar-nav mini-ul">
             <li
               className={
@@ -94,7 +94,7 @@ const Header = (props) => {
                   : "nav-item mr-2  mini-item"
               }
             >
-              <NavLink className="nav-link" to="/" exact>
+              <NavLink className="nav-link text-white" to="/" exact>
                 Trang chủ
               </NavLink>
             </li>
@@ -105,7 +105,7 @@ const Header = (props) => {
                   : "nav-item mr-2  mini-item"
               }
             >
-              <NavLink className="nav-link" to="/store" exact>
+              <NavLink className="nav-link text-white" to="/store" exact>
                 Sản phẩm
               </NavLink>
             </li>
@@ -116,7 +116,7 @@ const Header = (props) => {
                   : "nav-item mr-2  mini-item"
               }
             >
-              <NavLink className="nav-link" to="/cart" exact>
+              <NavLink className="nav-link text-white" to="/cart" exact>
                 Giỏ hàng
               </NavLink>
             </li>
@@ -128,7 +128,7 @@ const Header = (props) => {
                     : "nav-item mr-2  mini-item"
                 }
               >
-                <NavLink className="nav-link" to="/order" exact>
+                <NavLink className="nav-link text-white" to="/order" exact>
                   Đơn hàng
                 </NavLink>
               </li>
@@ -140,22 +140,22 @@ const Header = (props) => {
                   : "nav-item mr-2  mini-item"
               }
             >
-              <NavLink className="nav-link" to="/blog" exact>
+              <NavLink className="nav-link text-white" to="/blog" exact>
                 Chính sách
               </NavLink>
             </li>
             {props.user && (
               <li
-              className={
-                props.header === 6
-                  ? "nav-item mr-2  mini-item active"
-                  : "nav-item mr-2  mini-item"
-              }
-            >
-              <NavLink className="nav-link" to="/chat" exact>
-                Hỏi đáp
-              </NavLink>
-            </li>
+                className={
+                  props.header === 6
+                    ? "nav-item mr-2  mini-item active"
+                    : "nav-item mr-2  mini-item"
+                }
+              >
+                <NavLink className="nav-link" to="/chat" exact>
+                  Hỏi đáp
+                </NavLink>
+              </li>
             )}
           </ul>
           <form
@@ -176,7 +176,7 @@ const Header = (props) => {
               ></i>
             </button>
           </form>
-          {/* {props.user && (
+          {props.user && (
             <Dropdown
               customToggle={() => renderUserToggle(curr_user)}
               contentData={user_menu}
@@ -189,8 +189,8 @@ const Header = (props) => {
               contentData={not_menu}
               renderItems={(item, index) => renderUserMenu(item, index)}
             />
-          )} */}
-          {props.user ?  <Dropdown
+          )}
+          {/* {props.user ?  <Dropdown
               customToggle={() => renderUserToggle(curr_user)}
               contentData={user_menu}
               renderItems={(item, index) => renderUserMenu(item, index)}
@@ -198,7 +198,7 @@ const Header = (props) => {
               customToggle={() => renderUserToggle(curr_user)}
               contentData={not_menu}
               renderItems={(item, index) => renderUserMenu(item, index)}
-            />}
+            />} */}
         </div>
       </nav>
     </div>

@@ -44,6 +44,16 @@ body {
 .price {
   padding-left: 150px;
 }
+.mt-800 {
+  margin-top: 800px;
+}
+.z-100 {
+  z-index: 100;
+}
+.justify-between {
+  justify-content: space-between;
+}
+
 .card img {
   width: 50%;
   height: 50%;

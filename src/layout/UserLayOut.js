@@ -119,7 +119,7 @@ const UserLayOut = () => {
   };
 
   return (
-    <div className="col-10 offset-1">
+    <div className="">
       <Header
         header={header}
         searchHandler={searchHandler}
@@ -213,7 +213,11 @@ const UserLayOut = () => {
           <ForgotPassword></ForgotPassword>
         </Route>
         <Route path="/profile" exact>
-          <Profile user={user} refresh={refresh} userHandler={userHandler}></Profile>
+          <Profile
+            user={user}
+            refresh={refresh}
+            userHandler={userHandler}
+          ></Profile>
         </Route>
       </Switch>
       <Footer></Footer>

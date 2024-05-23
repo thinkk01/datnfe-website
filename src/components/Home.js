@@ -3,8 +3,8 @@ import nike from "../static/images/nike.jpg";
 import puma from "../static/images/puma.jpg";
 import fila from "../static/images/fila.jpg";
 import { NavLink } from "react-router-dom";
-import first from "../static/images/slider_1_image.jpg";
-import second from "../static/images/slider_2_image.jpg";
+import first from "../static/images/slider/1.jpg";
+import second from "../static/images/slider/2.jpg";
 import third from "../static/images/slider_4_image.jpg";
 import fourth from "../static/images/slider_5_image.jpg";
 import React, { useState, useEffect } from "react";
@@ -32,12 +32,10 @@ const Home = (props) => {
   ));
 
   useEffect(() => {
-    getAllProducts(page, 12, active).then((response) =>
-      {
-        setProducts(response.data.content);
-        setTotal(response.data.totalPages);
-      }
-    );
+    getAllProducts(page, 12, active).then((response) => {
+      setProducts(response.data.content);
+      setTotal(response.data.totalPages);
+    });
     props.changeHeaderHandler(1);
   }, [page]);
 
@@ -46,9 +44,13 @@ const Home = (props) => {
   };
 
   return (
-    <div>
+    <div className="mt-800">
       {/* Carousel */}
-      <div id="slides" className="carousel slide  mb-5" data-ride="carousel">
+      <div
+        id="slides"
+        className="carousel slider mb-5 slider"
+        data-ride="carousel"
+      >
         <ul className="carousel-indicators">
           <li data-target="#slides" data-slide-to={0} className="active" />
           <li data-target="#slides" data-slide-to={1} />
@@ -61,12 +63,6 @@ const Home = (props) => {
           </div>
           <div className="carousel-item">
             <img src={first} alt="" />
-          </div>
-          <div className="carousel-item">
-            <img src={third} alt="" />
-          </div>
-          <div className="carousel-item">
-            <img src={fourth} alt="" />
           </div>
         </div>
       </div>
@@ -88,7 +84,7 @@ const Home = (props) => {
       </div>
       <div className="container-fluid padding">
         <div className="row welcome mini-card">
-        <h4 className="title text-primary" >Mới nhất</h4>
+          <h4 className="title text-primary">Mới nhất</h4>
         </div>
       </div>
       <div className="col-11 container-fluid card">
